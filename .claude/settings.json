@@ -1,0 +1,68 @@
+{
+  "model": "fable",
+  "env": {
+    "DOTNET_ROOT": "/home/seonghyunlee/.dotnet",
+    "DOTNET_CLI_TELEMETRY_OPTOUT": "1",
+    "DOTNET_NOLOGO": "1"
+  },
+  "permissions": {
+    "allow": [
+      "Bash(dotnet build *)",
+      "Bash(dotnet test *)",
+      "Bash(dotnet format *)",
+      "Bash(dotnet run *)",
+      "Bash(dotnet publish *)",
+      "Bash(dotnet restore *)",
+      "Bash(dotnet --version)",
+      "Bash(dotnet --list-sdks)",
+      "Bash(dotnet new *)",
+      "Bash(dotnet add *)",
+      "Bash(dotnet sln *)"
+    ]
+  },
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Edit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash scripts/hooks/env-guard.sh",
+            "blocking": true,
+            "timeout": 10
+          }
+        ]
+      },
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash scripts/hooks/git-add-guard.sh",
+            "blocking": true,
+            "timeout": 10
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "Edit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash scripts/hooks/format.sh",
+            "timeout": 60
+          },
+          {
+            "type": "command",
+            "command": "bash scripts/hooks/build-check.sh",
+            "asyncRewake": true,
+            "timeout": 180,
+            "statusMessage": "dotnet build 확인 중…"
+          }
+        ]
+      }
+    ]
+  }
+}

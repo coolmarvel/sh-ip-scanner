@@ -1,0 +1,97 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="using:ShIpScanner.App.ViewModels"
+        xmlns:conv="using:ShIpScanner.App.Converters"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d" d:DesignWidth="940" d:DesignHeight="760"
+        x:Class="ShIpScanner.App.Views.MainWindow"
+        x:DataType="vm:MainViewModel"
+        Icon="/Assets/appicon.ico"
+        Width="940" Height="760" MinWidth="720" MinHeight="560"
+        CanResize="True"
+        Title="sh IP Scanner">
+
+    <!-- CanResize=True 이면 OS 타이틀바에 최소화·최대화(확대)·닫기 버튼이 표준으로 제공된다. -->
+
+    <Design.DataContext>
+        <vm:MainViewModel />
+    </Design.DataContext>
+
+    <Window.Resources>
+        <conv:HostStateToBrushConverter x:Key="StateToBrush" />
+    </Window.Resources>
+
+    <!-- 4행 구성: ①헤더 ②컨트롤 ③로그 ④바둑판 -->
+    <Grid RowDefinitions="Auto,Auto,Auto,*" Background="#EEF2F7">
+
+        <!-- ① 헤더: 좌측 제목 / 우측 라이센스 -->
+        <Grid Grid.Row="0" ColumnDefinitions="*,Auto" Background="#DCE6F2">
+            <StackPanel Grid.Column="0" Orientation="Horizontal" Margin="12,8" Spacing="10" VerticalAlignment="Center">
+                <Image Source="/Assets/appicon.ico" Width="28" Height="28" />
+                <TextBlock Text="sh IP Scanner" FontSize="18" FontWeight="Bold" VerticalAlignment="Center" />
+            </StackPanel>
+            <!-- 라이센스/저작자 (원본의 falinux 링크 자리 → 내 라이센스로 교체) -->
+            <TextBlock Grid.Column="1" Text="© 2026 이성현 (SeongHyun Lee)" Margin="12,8"
+                       VerticalAlignment="Center" FontSize="11" Foreground="#556" />
+        </Grid>
+
+        <!-- ② 컨트롤: 설명 + 로컬 IP + 검색/종료 -->
+        <Grid Grid.Row="1" ColumnDefinitions="*,Auto" Margin="12,10">
+            <StackPanel Grid.Column="0" VerticalAlignment="Center" Spacing="2">
+                <TextBlock Text="로컬 네트워크에서 사용 중인 IP와 사용 가능한 IP 를 조회합니다." FontSize="13" />
+                <TextBlock Text="로컬 IP 를 확인하고 [검색 시작] 버튼을 클릭하세요." FontSize="12" Foreground="#556" />
+            </StackPanel>
+
+            <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
+                <TextBlock Text="로컬 IP" VerticalAlignment="Center" />
+                <TextBox Text="{Binding LocalIp, Mode=TwoWay}" Width="150" VerticalContentAlignment="Center" />
+                <Button Content="검색 시작" Command="{Binding StartScanCommand}"
+                        IsEnabled="{Binding !IsScanning}" Background="#2E9E5B" Foreground="White"
+                        Padding="14,6" FontWeight="Bold" />
+                <Button Content="중지" Command="{Binding StopScanCommand}"
+                        IsEnabled="{Binding IsScanning}" Padding="10,6" />
+            </StackPanel>
+        </Grid>
+
+        <!-- ③ 로그 영역(검은 배경) -->
+        <Border Grid.Row="2" Background="#101010" Height="96" Margin="12,0">
+            <ScrollViewer VerticalScrollBarVisibility="Auto">
+                <ItemsControl ItemsSource="{Binding Log}" Margin="8,6">
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <TextBlock Text="{Binding}" Foreground="#7CFC7C" FontFamily="Consolas,monospace" FontSize="12" />
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </ScrollViewer>
+        </Border>
+
+        <!-- ④ 바둑판(그리드) — 화면 폭에 맞춰 15열이 균등하게 늘어난다(가로 스크롤 없음). -->
+        <ScrollViewer Grid.Row="3" Margin="12,10,12,12"
+                      HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
+            <ItemsControl ItemsSource="{Binding Cells}">
+                <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <UniformGrid Columns="15" />
+                    </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate x:DataType="vm:HostCellViewModel">
+                        <!-- Width 고정 없이 HorizontalAlignment=Stretch → 열 폭이 창 크기에 맞춰 늘어난다. -->
+                        <Border Height="44" Margin="1" HorizontalAlignment="Stretch"
+                                BorderBrush="#B0B0B0" BorderThickness="1"
+                                Background="{Binding State, Converter={StaticResource StateToBrush}}"
+                                ToolTip.Tip="{Binding Ip}">
+                            <Grid RowDefinitions="Auto,*" Margin="3,1">
+                                <TextBlock Grid.Row="0" Text="{Binding Octet}" FontSize="11" FontWeight="Bold" Foreground="#222" />
+                                <TextBlock Grid.Row="1" Text="{Binding HostName}" FontSize="10" Foreground="#222"
+                                           TextWrapping="NoWrap" TextTrimming="CharacterEllipsis" />
+                            </Grid>
+                        </Border>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+        </ScrollViewer>
+    </Grid>
+</Window>

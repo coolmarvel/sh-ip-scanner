@@ -1,0 +1,31 @@
+# 환경 변수·시크릿
+.env
+.env.*
+!.env.example
+
+# 에이전트 로컬 설정 (permissions 캐시 등 — 개인 것)
+.claude/settings.local.json
+
+# OS/에디터
+.DS_Store
+Thumbs.db
+
+# 피드백 스크린샷 — 실제 내부망 IP·PC명이 찍혀 있을 수 있어 git 에 올리지 않는다(로컬만 보존)
+docs/feedback-archive/**/*.png
+docs/feedback-archive/**/*.jpg
+docs/feedback-archive/**/*.jpeg
+
+# 로그
+*.log
+
+# 의존성·빌드 산출물 (.NET)
+bin/
+obj/
+*.user
+# 게시/패키징 산출물
+publish/
+artifacts/
+installer/Output/
+# Rider/VS
+.idea/
+.vs/
