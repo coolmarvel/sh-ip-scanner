@@ -11,7 +11,7 @@
         Title="대역 관리">
 
     <Grid Margin="16" RowDefinitions="Auto,*,Auto,Auto">
-        <TextBlock Grid.Row="0" Text="스캔할 대역을 추가·삭제합니다. (앞 3옥텟만 입력, 예: 192.168.85)"
+        <TextBlock Grid.Row="0" Text="스캔할 대역을 추가·삭제합니다. (앞 3옥텟만 입력, 예: 192.168.10)"
                    FontSize="13" Foreground="#445" Margin="0,0,0,10" TextWrapping="Wrap" />
 
         <!-- 대역 목록 -->
@@ -27,7 +27,7 @@
 
         <!-- 추가 -->
         <StackPanel Grid.Row="2" Orientation="Horizontal" Spacing="8" Margin="0,12,0,0">
-            <TextBox Text="{Binding NewSubnet, Mode=TwoWay}" Watermark="예: 192.168.85"
+            <TextBox Text="{Binding NewSubnet, Mode=TwoWay}" Watermark="예: 192.168.10"
                      Width="200" VerticalContentAlignment="Center" />
             <Button Content="＋ 추가" Command="{Binding AddSubnetCommand}" Padding="12,6" />
             <Button Content="선택 삭제" Command="{Binding RemoveSubnetCommand}" Padding="12,6" />

@@ -39,6 +39,9 @@ public partial class MainViewModel : ViewModelBase
     [ObservableProperty] private int _maxParallel = 128;
     [ObservableProperty] private bool _resolveNames = true;
 
+    // 첫 실행 여부(저장된 대역이 하나도 없음) — MainWindow 가 이 값을 보고 안내 팝업을 띄운다.
+    [ObservableProperty] private bool _isFirstRun;
+
     public MainViewModel()
     {
         // 저장된 스캔 옵션 로드.
@@ -47,8 +50,11 @@ public partial class MainViewModel : ViewModelBase
         MaxParallel = st.MaxParallel;
         ResolveNames = st.ResolveNames;
 
-        // 저장된 대역 목록 로드(없으면 기본 3개).
-        foreach (var d in _store.Load()) Subnets.Add(d);
+        // 저장된 대역 목록 로드. 비어 있으면 첫 실행 — 기본 대역은 하드코딩하지 않는다
+        // (환경마다 대역이 다르고, 공개 저장소에 실제 운영 대역을 남기지 않기 위해).
+        var stored = _store.Load();
+        IsFirstRun = stored.Count == 0;
+        foreach (var d in stored) Subnets.Add(d);
 
         // 내 IP 자동 감지 → 내 대역이 목록에 없으면 맨 앞에 추가하고, 그걸 기본 선택.
         var ip = LocalNetwork.GetPrimaryIPv4();
@@ -169,18 +175,18 @@ public partial class MainViewModel : ViewModelBase
     [RelayCommand]
     private void StopScan() => _cts?.Cancel();
 
-    // 대역 추가(관리자) — "192.168.85" 처럼 앞 3옥텟만 입력.
+    // 대역 추가(관리자) — "192.168.10" 처럼 앞 3옥텟만 입력.
     [RelayCommand]
     private void AddSubnet()
     {
         var b = (NewSubnet ?? "").Trim();
-        // 사용자가 "192.168.85.1" 처럼 4옥텟을 넣어도 앞 3옥텟으로 정규화.
+        // 사용자가 "192.168.10.1" 처럼 4옥텟을 넣어도 앞 3옥텟으로 정규화.
         var parts = b.Split('.');
         if (parts.Length == 4) b = string.Join('.', parts.Take(3));
 
         if (!SubnetStore.IsValidBase(b))
         {
-            AddLog($"대역 추가 실패: '{NewSubnet}' 는 올바른 형식이 아닙니다 (예: 192.168.85).");
+            AddLog($"대역 추가 실패: '{NewSubnet}' 는 올바른 형식이 아닙니다 (예: 192.168.10).");
             return;
         }
         if (Subnets.Any(s => s.Base == b))

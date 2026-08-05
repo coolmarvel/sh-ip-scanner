@@ -14,7 +14,7 @@ public partial class HostCellViewModel : ObservableObject
         _ip = ip;
     }
 
-    [ObservableProperty] private string _ip;                        // "192.168.80.12"
+    [ObservableProperty] private string _ip;                        // "192.168.0.12"
     [ObservableProperty] private HostState _state = HostState.Unknown; // 색(흰/주황/연두)을 결정
     [ObservableProperty] private string _hostName = "";             // 예: "관리부-PC01"
     [ObservableProperty] private long _rttMs;                       // 왕복 시간(툴팁용)

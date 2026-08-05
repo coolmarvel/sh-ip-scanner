@@ -19,7 +19,7 @@ public sealed class SubnetScanner
         _timeoutMs = timeoutMs;
     }
 
-    // subnetBase 예: "192.168.80". 각 IP 결과를 progress 로 즉시 흘려보낸다(점진적 표시).
+    // subnetBase 예: "192.168.0". 각 IP 결과를 progress 로 즉시 흘려보낸다(점진적 표시).
     public async Task ScanAsync(string subnetBase, IProgress<PingOutcome> progress, CancellationToken ct)
     {
         using var gate = new SemaphoreSlim(_maxParallel);

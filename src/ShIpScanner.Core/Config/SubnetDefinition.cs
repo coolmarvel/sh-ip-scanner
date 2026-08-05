@@ -3,7 +3,7 @@ using System.Text.Json.Serialization;
 namespace ShIpScanner.Core.Config;
 
 // 스캔할 서브넷 하나의 정의(설정 파일에 저장되는 단위).
-// Base = 앞 3옥텟("192.168.80"), Label = 관리자용 별칭(선택, 예: "본원").
+// Base = 앞 3옥텟("192.168.0"), Label = 관리자용 별칭(선택, 예: "본원").
 public sealed class SubnetDefinition
 {
     public string Base { get; set; } = "";

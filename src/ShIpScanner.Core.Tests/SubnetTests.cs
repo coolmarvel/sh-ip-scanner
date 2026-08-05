@@ -7,24 +7,36 @@ namespace ShIpScanner.Core.Tests;
 public class SubnetTests
 {
     [Theory]
-    [InlineData("192.168.80", true)]
     [InlineData("192.168.0", true)]
-    [InlineData("192.168.85", true)]
-    [InlineData("192.168.80.1", false)] // 4옥텟은 base 가 아님
-    [InlineData("192.168", false)]      // 옥텟 부족
-    [InlineData("192.168.256", false)]  // 범위 초과
+    [InlineData("10.0.1", true)]
+    [InlineData("172.16.5", true)]
+    [InlineData("192.168.0.1", false)] // 4옥텟은 base 가 아님
+    [InlineData("192.168", false)]     // 옥텟 부족
+    [InlineData("192.168.256", false)] // 범위 초과
     [InlineData("a.b.c", false)]
     [InlineData("", false)]
     public void IsValidBase_Works(string input, bool expected)
         => Assert.Equal(expected, SubnetStore.IsValidBase(input));
 
+    // 기본 대역을 하드코딩하지 않는다 — 파일이 없으면 빈 목록(=첫 실행)이어야 한다.
     [Fact]
-    public void Defaults_ContainThreeOperatingSubnets()
+    public void Load_WithoutFile_ReturnsEmpty()
     {
-        var d = SubnetStore.Defaults();
-        Assert.Contains(d, x => x.Base == "192.168.80");
-        Assert.Contains(d, x => x.Base == "192.168.85");
-        Assert.Contains(d, x => x.Base == "192.168.90");
+        var tmp = System.IO.Path.Combine(System.IO.Path.GetTempPath(), "sh-ip-no-such-file.json");
+        System.IO.File.Delete(tmp);
+        Assert.Empty(new SubnetStore(tmp).Load());
+    }
+
+    // 손상/무효 항목은 걸러내고 유효 항목만 남긴다(전부 무효면 빈 목록).
+    [Fact]
+    public void Load_FiltersInvalidAndDuplicateEntries()
+    {
+        var tmp = System.IO.Path.Combine(System.IO.Path.GetTempPath(), "sh-ip-sanitize-test.json");
+        System.IO.File.WriteAllText(tmp,
+            "[{\"Base\":\"192.168.0\"},{\"Base\":\"192.168.0\"},{\"Base\":\"bad\"},{\"Base\":\"10.0.1\"}]");
+        var loaded = new SubnetStore(tmp).Load();
+        Assert.Equal(new[] { "192.168.0", "10.0.1" }, loaded.Select(s => s.Base));
+        System.IO.File.Delete(tmp);
     }
 }
 
@@ -40,22 +52,6 @@ public class ScanSettingsTests
         Assert.InRange(loaded.TimeoutMs, 100, 10000);
         Assert.InRange(loaded.MaxParallel, 1, 512);
         Assert.False(loaded.ResolveNames);
-        System.IO.File.Delete(tmp);
-    }
-}
-
-public class SubnetMigrationTests
-{
-    [Fact]
-    public void LegacyTypo_95_Is_Migrated_To_90_On_Load()
-    {
-        var tmp = System.IO.Path.Combine(System.IO.Path.GetTempPath(), "sh-ip-migrate-test.json");
-        System.IO.File.WriteAllText(tmp,
-            "[{\"Base\":\"192.168.80\"},{\"Base\":\"192.168.85\"},{\"Base\":\"192.168.95\"}]");
-        var loaded = new SubnetStore(tmp).Load();
-        var bases = loaded.Select(s => s.Base).ToList();
-        Assert.Contains("192.168.90", bases);
-        Assert.DoesNotContain("192.168.95", bases);
         System.IO.File.Delete(tmp);
     }
 }

@@ -12,7 +12,7 @@
             <Image Source="/Assets/appicon.ico" Width="40" Height="40" />
             <StackPanel VerticalAlignment="Center">
                 <TextBlock Text="sh IP Scanner" FontSize="18" FontWeight="Bold" />
-                <TextBlock Text="버전 0.5.0" FontSize="12" Foreground="#667" />
+                <TextBlock Text="버전 1.0.1" FontSize="12" Foreground="#667" />
             </StackPanel>
         </StackPanel>
 

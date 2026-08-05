@@ -27,13 +27,14 @@ if (which == "demo")
         if (r < 35) { c.State = HostState.Alive; if (r < 10) c.HostName = names[ni++ % names.Length]; }
         else c.State = HostState.Free;
     }
-    vm.Log.Add("[192.168.80.x] 대역을 검색합니다.");
-    vm.Log.Add("IP:192.168.80.1 >>>> PC-01 이(가) 사용 중입니다.");
+    vm.Log.Add("[192.168.0.x] 대역을 검색합니다.");
+    vm.Log.Add("IP:192.168.0.1 >>>> PC-01 이(가) 사용 중입니다.");
 }
 
 Window win = which switch
 {
     "manager" => new SubnetManagerWindow { DataContext = vm },
+    "firstrun" => new FirstRunWindow { DataContext = vm },
     "settings" => new SettingsWindow { DataContext = vm },
     "about" => new AboutWindow(),
     _ => new MainWindow { DataContext = vm },

@@ -29,7 +29,7 @@ public static class LocalNetwork
         return null;
     }
 
-    // "192.168.80.103" → "192.168.80" (앞 3옥텟). /24 스캔의 기준 대역.
+    // "192.168.0.103" → "192.168.0" (앞 3옥텟). /24 스캔의 기준 대역.
     public static string? GetSubnetBase(IPAddress ip)
     {
         var b = ip.GetAddressBytes();

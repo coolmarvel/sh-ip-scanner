@@ -1,7 +1,7 @@
 ---
 title: 세션 로그
 created: 2026-08-04
-updated: 2026-08-04
+updated: 2026-08-05
 domain: development
 ---
 
@@ -12,9 +12,44 @@ domain: development
 
 블록 형식: `## YYYY-MM-DD — 제목` 아래에 **요청/피드백 → 수정 → 검증 → 다음** 순서로 간결하게.
 
+## 2026-08-05 — 기본 대역 하드코딩 제거 + 첫 실행 안내 모달 (v1.0.1)
+
+- **요청**: 코드에 디폴트로 박힌 실 운영 대역(192.168.80.xxx)을 지우고, 첫 실행 때 안내
+  모달/팝업으로 대역을 등록하게 하자. 그러면 레포를 public 으로 전환할 수도 있음.
+- **수정**:
+  - `SubnetStore`: `Defaults()`(하드코딩 3개 대역)·`MigrateLegacyTypo`(95→90, 실 IP 포함) 삭제.
+    파일 없음/손상 시 **빈 목록** 반환(=첫 실행 신호). Sanitize 도 빈 목록 허용.
+  - `MainViewModel`: `IsFirstRun`(저장 대역 0개) 추가. 내 대역 자동 감지·시드는 유지.
+  - **`FirstRunWindow` 신설**: 첫 실행 때 "스캔할 대역을 등록해 주세요" 안내 + 감지된 내 IP 표시
+    (감지 실패 시 직접 등록 안내). [대역 관리 열기] → 곧바로 대역 관리 모달. `MainWindow.Opened` 에서 구동.
+  - 코드·주석·XAML 예시·테스트·ShotTool·docs(README/brief/changelog/session-log/todo/plans)의
+    실 대역을 전부 일반 예시(192.168.x)로 치환. `grep 192.168` → 텍스트 파일 기준 0건.
+  - 테스트 교체: Defaults/마이그레이션 테스트 삭제 → 파일 없으면 빈 목록·무효/중복 필터 테스트.
+  - 버전 **1.0.1**(PATCH): csproj·`.iss`·AboutWindow.
+- **주의(공개 전환 전 남은 리스크)**: ① **git history** 에 실 대역·커밋들이 그대로 남아 있음 —
+  public 전환 전 history 재작성 또는 새 레포로 이관 필요. ② `docs/feedback-archive/2026-08-04-ui-reference/`
+  **스크린샷**(faIpScanner-reference.png 등)에 실 대역 IP·부서 PC명이 이미지로 포함 — 삭제/마스킹 필요.
+- **검증**: build·test(**11개**)·format 3종 통과. 헤드리스 렌더로 FirstRunWindow 확인(내 IP 감지 표시).
+- **다음**: Windows 실환경에서 1.0.1 첫 실행 플로우(모달→대역 등록) 확인. public 전환 시 위 리스크 처리.
+
+## 2026-08-05 — 에이전트 노선 전면 롤백 → sh IP Scanner v1.0.0
+
+- **요청**: 엔드포인트 에이전트(sh Agent) 방향은 불필요 — **관련 코드·문서 전부 삭제**하고
+  스캐너 단독 앱(v0.5.0 시점)으로 되돌린다. 레포명도 `sh-pc-manager` → **`sh-ip-scanner`** 복원.
+  버전은 내리지 않고 **1.0.0** 으로 선언하고 진행.
+- **수정**:
+  - 트리를 v0.5.0 커밋(8141712) 상태로 복원: `ShIpScanner.Agent`·`ShIpScanner.Shared`·
+    `PcControlWindow`·`AgentProtocolTests`·`installer/agent/` 삭제, 콘솔명 **sh Manager → sh IP Scanner**
+    환원(APPDATA `sh IP Scanner`, 인스톨러 `sh-ip-scanner.iss`), 에이전트 문서
+    (`adr/0003`·`plans/0002`·`guides/agent-install-firewall.md`) 삭제.
+  - 버전 **1.0.0**: csproj(Version/AssemblyVersion/FileVersion)·`.iss`·AboutWindow.
+  - todo 의 M5(원격 전원 관리) 로드맵 항목 제거(노선 폐기). GitHub 레포·로컬 폴더명 sh-ip-scanner 복원.
+- **검증**: build·test·format 3종 + 인스톨러 `sh-ip-scanner-Setup-1.0.0.exe` 재컴파일 → 바탕화면 교체.
+- **다음**: Windows 실환경에서 1.0.0 설치·스캔 확인. (세션 로그의 과거 에이전트 블록은 이력이라 보존)
+
 ## 2026-08-05 — 좌상단 메뉴+모달 · UI 정리 · 대역 오타 교정 (v0.5.0)
 
-- **피드백**: (1) 기본 대역 오타 — 95 가 아니라 **192.168.90**. (2) 내 IP~대역관리가 한 줄에 몰려
+- **피드백**: (1) 기본 대역 오타 — 95 가 아니라 **…90**. (2) 내 IP~대역관리가 한 줄에 몰려
   어색 → 좌상단 아이콘 메뉴를 눌러 **대역 관리/설정을 모달**로(옛 실행기 느낌). (3) 내 IP 가 너무 흐림.
   (4) 전체 폰트·정렬 정리, 내 IP 적절히 배치.
 - **수정**: `Core/Config/ScanSettings`·`ScanSettingsStore`(settings.json). `SubnetStore` 에 오타 세트
@@ -27,7 +62,7 @@ domain: development
 
 ## 2026-08-05 — 여러 대역 드롭다운(관리자 선택) (v0.4.0)
 
-- **요청**: 운영 대역이 192.168.80/85/95 세 개다. 이걸 골라 스캔하게 드롭다운으로. 관리자 컨트롤 목적.
+- **요청**: 운영 대역이 세 개다. 이걸 골라 스캔하게 드롭다운으로. 관리자 컨트롤 목적.
 - **답변/설계**: 단일 PC 는 자기 대역만 자동 감지 가능(나머지는 라우터 너머라 자동 발견 불가) →
   **편집 가능한 대역 목록 + 드롭다운** 방식 채택. 기본값에 3개 대역 시드, 관리자가 추가/삭제.
 - **수정**: `Core/Config/SubnetDefinition`·`SubnetStore`(JSON, `%APPDATA%\sh IP Scanner\subnets.json`).
@@ -53,12 +88,12 @@ domain: development
   치환 + 7단계(라이센스 적용) 추가, 발사대 `CLAUDE.md` 구조에 반영.
 - **검증**: build(0/0)·test(1/1)·format(clean). **헤드리스 렌더**로 확대 제거·폭맞춤·라이센스 표기 확인.
   인스톨러 재컴파일 → `sh-ip-scanner-Setup-0.3.0.exe` 바탕화면 교체(0.2.0 삭제). seed 템플릿 플레이스홀더 무손상 확인.
-- **다음**: 사용자 Windows 실환경 설치·스캔 검증(원내망 192.168.80.x, 한글 PC명).
+- **다음**: 사용자 Windows 실환경 설치·스캔 검증(원내망, 한글 PC명).
 
 ## 2026-08-04 — 실제 UI(바둑판) 구현 + 아이콘/라이센스 인스톨러 v0.2.0
 
 - **피드백**: 루트에 원본 스크린샷 첨부. 실제 UI 는 DataGrid 가 아니라 **254칸 바둑판**(흰→주황=사용중/
-  연두=사용가능, 셀에 한글 PC명). 로컬 IP 자동감지(192.168.80.x). 우상단에 **확대 버튼 신규 추가**,
+  연두=사용가능, 셀에 한글 PC명). 로컬 IP 자동감지. 우상단에 **확대 버튼 신규 추가**,
   **아이콘 제작**, 설치 시 **내 이름·라이센스** 명시, **cm병원 관련 배제**. 배경: 전산 관리 목적 +
   미래에 업무종료 후 자동 종료/재부팅 확장.
 - **수정**:
@@ -73,7 +108,7 @@ domain: development
 - **검증**: `dotnet build`(0/0)·`dotnet test`(1/1)·`dotnet format`(clean). **Avalonia 헤드리스로 UI 를
   PNG 캡처**해 초기 흰 바둑판 + 스캔 상태(주황/연두 + 한글명 렌더)를 눈으로 확인. 인스톨러 재컴파일
   (wine ISCC) → `sh-ip-scanner-Setup-0.2.0.exe` 바탕화면 교체(0.1.0 삭제).
-- **다음**: 사용자가 Windows 에서 인스톨러 설치→실제 원내망(192.168.80.x) 스캔으로 PC명 조회 확인.
+- **다음**: 사용자가 Windows 에서 인스톨러 설치→실제 원내망 스캔으로 PC명 조회 확인.
   이후 다듬기(진행바·정렬) 또는 미래 M5(원격 전원 관리) 논의.
 
 ## 2026-08-04 — 하네스 자동화 + v0.1.0 인스톨러 선검증
