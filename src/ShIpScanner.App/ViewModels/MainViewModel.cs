@@ -1,10 +1,11 @@
 using System;
 using System.Collections.ObjectModel;
-using System.Net;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using ShIpScanner.Core.Config;
 using ShIpScanner.Core.Naming;
 using ShIpScanner.Core.Net;
 using ShIpScanner.Core.Scanning;
@@ -12,62 +13,75 @@ using ShIpScanner.Core.Scanning;
 namespace ShIpScanner.App.ViewModels;
 
 // [개념: MVVM 의 VM] 화면(View)과 로직 사이의 상태 + 명령 계층.
-// View 는 여기의 프로퍼티/커맨드에 바인딩만 하고, 값이 바뀌면 화면이 따라온다.
 public partial class MainViewModel : ViewModelBase
 {
     private readonly SubnetScanner _scanner = new(maxParallel: 128, timeoutMs: 1000);
-
-    // 이름 조회: NetBIOS(한글 PC명) 우선 → 실패 시 역DNS. (→ Core/Naming)
     private readonly IHostNameResolver _resolver =
         new CompositeHostNameResolver(new NetBiosNameResolver(), new ReverseDnsResolver());
-
+    private readonly SubnetStore _store = new();
     private CancellationTokenSource? _cts;
 
-    // 바둑판 셀 254개. View 는 이 컬렉션을 UniformGrid 로 그린다.
-    public ObservableCollection<HostCellViewModel> Cells { get; } = new();
+    // 스캔 대상 대역 목록(드롭다운) — 관리자가 여러 대역을 오가며 고른다.
+    public ObservableCollection<SubnetDefinition> Subnets { get; } = new();
 
-    // 검은 로그 영역에 뿌릴 진행 메시지들.
+    public ObservableCollection<HostCellViewModel> Cells { get; } = new();
     public ObservableCollection<string> Log { get; } = new();
 
-    [ObservableProperty] private string _localIp = "";
+    [ObservableProperty] private SubnetDefinition? _selectedSubnet;
+    [ObservableProperty] private string _newSubnet = "";   // "새 대역 추가" 입력칸
+    [ObservableProperty] private string _localIpText = "";  // 자동 감지된 내 IP(안내용)
     [ObservableProperty] private bool _isScanning;
     [ObservableProperty] private int _aliveCount;
     [ObservableProperty] private int _scannedCount;
 
     public MainViewModel()
     {
-        // 로컬 IP 자동 감지 → 텍스트박스에 채운다(원본과 동일 동작).
+        // 저장된 대역 목록 로드(없으면 기본 3개).
+        foreach (var d in _store.Load()) Subnets.Add(d);
+
+        // 내 IP 자동 감지 → 내 대역이 목록에 없으면 맨 앞에 추가하고, 그걸 기본 선택.
         var ip = LocalNetwork.GetPrimaryIPv4();
-        LocalIp = ip?.ToString() ?? "192.168.0.1";
+        LocalIpText = ip?.ToString() ?? "";
+        var localBase = ip != null ? LocalNetwork.GetSubnetBase(ip) : null;
+        if (localBase != null && !Subnets.Any(s => s.Base == localBase))
+        {
+            Subnets.Insert(0, new SubnetDefinition { Base = localBase, Label = "내 대역" });
+            Persist();
+        }
+        SelectedSubnet = Subnets.FirstOrDefault(s => s.Base == localBase) ?? Subnets.FirstOrDefault();
+
         BuildCells();
     }
+
+    private string CurrentBase => SelectedSubnet?.Base ?? "192.168.0";
 
     private void BuildCells()
     {
         Cells.Clear();
-        string b = SubnetBaseOrDefault();
         for (int o = 1; o <= 254; o++)
-            Cells.Add(new HostCellViewModel(o, $"{b}.{o}")); // 초기: 전부 흰색(Unknown)
+            Cells.Add(new HostCellViewModel(o, $"{CurrentBase}.{o}"));
     }
 
-    private string SubnetBaseOrDefault()
+    // 드롭다운에서 대역을 바꾸면 바둑판을 그 대역 기준으로 초기화(흰색).
+    partial void OnSelectedSubnetChanged(SubnetDefinition? value)
     {
-        if (IPAddress.TryParse(LocalIp, out var ip))
+        if (Cells.Count == 0) return;
+        foreach (var c in Cells)
         {
-            var b = LocalNetwork.GetSubnetBase(ip);
-            if (b != null) return b;
+            c.Ip = $"{CurrentBase}.{c.Octet}";
+            c.State = HostState.Unknown;
+            c.HostName = "";
+            c.RttMs = 0;
         }
-        return "192.168.0";
     }
 
-    // [검색 시작] 버튼
+    // [검색 시작]
     [RelayCommand]
     private async Task StartScanAsync()
     {
-        if (IsScanning) return;
+        if (IsScanning || SelectedSubnet is null) return;
 
-        // 대역을 텍스트박스 기준으로 재설정하고, 바둑판을 흰색으로 초기화.
-        string b = SubnetBaseOrDefault();
+        string b = CurrentBase;
         foreach (var c in Cells)
         {
             c.Ip = $"{b}.{c.Octet}";
@@ -78,14 +92,13 @@ public partial class MainViewModel : ViewModelBase
         Log.Clear();
         AliveCount = 0;
         ScannedCount = 0;
-        AddLog("사용하고 있는 IP 의 호스트 이름을 검색하겠습니다.");
-        AddLog("호스트 이름 검색은 다소 시간이 걸립니다.");
+        AddLog($"[{b}.x] 대역을 검색합니다.");
+        AddLog("사용 중인 IP 의 호스트 이름(PC명)을 함께 조회합니다.");
 
         IsScanning = true;
         _cts = new CancellationTokenSource();
         var ct = _cts.Token;
 
-        // Progress<T> 는 콜백을 UI 스레드(생성된 컨텍스트)로 마샬링한다 → 셀 갱신이 안전하다.
         var progress = new Progress<PingOutcome>(OnPing);
         try
         {
@@ -102,7 +115,6 @@ public partial class MainViewModel : ViewModelBase
         }
     }
 
-    // 핑 결과 하나가 도착할 때마다 호출(UI 스레드).
     private async void OnPing(PingOutcome o)
     {
         ScannedCount++;
@@ -110,15 +122,14 @@ public partial class MainViewModel : ViewModelBase
 
         if (!o.Alive)
         {
-            cell.State = HostState.Free; // 연두 = 사용 가능
+            cell.State = HostState.Free;
             return;
         }
 
-        cell.State = HostState.Alive;    // 주황 = 사용 중
+        cell.State = HostState.Alive;
         cell.RttMs = o.RttMs;
         AliveCount++;
 
-        // 이름은 뒤이어 비동기로 채운다(느릴 수 있어 핑 표시를 막지 않도록 분리).
         var name = await _resolver.ResolveAsync(o.Ip, _cts?.Token ?? CancellationToken.None);
         if (!string.IsNullOrWhiteSpace(name))
         {
@@ -131,13 +142,56 @@ public partial class MainViewModel : ViewModelBase
         }
     }
 
-    // [중지] 버튼
     [RelayCommand]
     private void StopScan() => _cts?.Cancel();
+
+    // 대역 추가(관리자) — "192.168.85" 처럼 앞 3옥텟만 입력.
+    [RelayCommand]
+    private void AddSubnet()
+    {
+        var b = (NewSubnet ?? "").Trim();
+        // 사용자가 "192.168.85.1" 처럼 4옥텟을 넣어도 앞 3옥텟으로 정규화.
+        var parts = b.Split('.');
+        if (parts.Length == 4) b = string.Join('.', parts.Take(3));
+
+        if (!SubnetStore.IsValidBase(b))
+        {
+            AddLog($"대역 추가 실패: '{NewSubnet}' 는 올바른 형식이 아닙니다 (예: 192.168.85).");
+            return;
+        }
+        if (Subnets.Any(s => s.Base == b))
+        {
+            AddLog($"이미 목록에 있는 대역입니다: {b}.x");
+            SelectedSubnet = Subnets.First(s => s.Base == b);
+            NewSubnet = "";
+            return;
+        }
+        var def = new SubnetDefinition { Base = b };
+        Subnets.Add(def);
+        SelectedSubnet = def;
+        NewSubnet = "";
+        Persist();
+        AddLog($"대역을 추가했습니다: {b}.x");
+    }
+
+    // 선택 대역 삭제(최소 1개는 남긴다).
+    [RelayCommand]
+    private void RemoveSubnet()
+    {
+        if (SelectedSubnet is null || Subnets.Count <= 1) return;
+        var removed = SelectedSubnet;
+        int idx = Subnets.IndexOf(removed);
+        Subnets.Remove(removed);
+        SelectedSubnet = Subnets[Math.Max(0, idx - 1)];
+        Persist();
+        AddLog($"대역을 삭제했습니다: {removed.Base}.x");
+    }
+
+    private void Persist() => _store.Save(Subnets);
 
     private void AddLog(string line)
     {
         Log.Add(line);
-        if (Log.Count > 500) Log.RemoveAt(0); // 무한 증가 방지
+        if (Log.Count > 500) Log.RemoveAt(0);
     }
 }

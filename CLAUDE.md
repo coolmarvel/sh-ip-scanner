@@ -96,6 +96,7 @@ cp installer/Output/sh-ip-scanner-Setup-*.exe /mnt/c/Users/user/Desktop/
 | 위치 | 역할 |
 |---|---|
 | `src/ShIpScanner.Core/Net/` | `LocalNetwork` — 주 IPv4 자동 감지 + `/24` 대역 추출 |
+| `src/ShIpScanner.Core/Config/` | `SubnetDefinition`·`SubnetStore` — 스캔 대역 목록 JSON 저장(`%APPDATA%\sh IP Scanner\subnets.json`) |
 | `src/ShIpScanner.Core/Scanning/` | `SubnetScanner`(병렬 핑 스윕) · `PingOutcome`(record) · `HostState`(enum) |
 | `src/ShIpScanner.Core/Naming/` | `IHostNameResolver` + `NetBiosNameResolver`(UDP137, CP949 한글) · `ReverseDnsResolver` · `CompositeHostNameResolver` |
 | `src/ShIpScanner.App/ViewModels/` | `MainViewModel`(상태·커맨드·스캔 오케스트레이션) · `HostCellViewModel`(셀) |

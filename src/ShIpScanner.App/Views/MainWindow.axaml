@@ -2,6 +2,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:vm="using:ShIpScanner.App.ViewModels"
         xmlns:conv="using:ShIpScanner.App.Converters"
+        xmlns:cfg="using:ShIpScanner.Core.Config"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         mc:Ignorable="d" d:DesignWidth="940" d:DesignHeight="760"
@@ -36,21 +37,39 @@
                        VerticalAlignment="Center" FontSize="11" Foreground="#556" />
         </Grid>
 
-        <!-- ② 컨트롤: 설명 + 로컬 IP + 검색/종료 -->
+        <!-- ② 컨트롤: 설명 + 대역 드롭다운(관리자용) + 검색 -->
         <Grid Grid.Row="1" ColumnDefinitions="*,Auto" Margin="12,10">
             <StackPanel Grid.Column="0" VerticalAlignment="Center" Spacing="2">
-                <TextBlock Text="로컬 네트워크에서 사용 중인 IP와 사용 가능한 IP 를 조회합니다." FontSize="13" />
-                <TextBlock Text="로컬 IP 를 확인하고 [검색 시작] 버튼을 클릭하세요." FontSize="12" Foreground="#556" />
+                <TextBlock Text="스캔할 대역을 고르고 [검색 시작]을 누르세요. 사용 중인 IP·PC명을 조회합니다." FontSize="13" />
+                <TextBlock Text="{Binding LocalIpText, StringFormat='내 IP: {0}'}" FontSize="12" Foreground="#556" />
             </StackPanel>
 
-            <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
-                <TextBlock Text="로컬 IP" VerticalAlignment="Center" />
-                <TextBox Text="{Binding LocalIp, Mode=TwoWay}" Width="150" VerticalContentAlignment="Center" />
-                <Button Content="검색 시작" Command="{Binding StartScanCommand}"
-                        IsEnabled="{Binding !IsScanning}" Background="#2E9E5B" Foreground="White"
-                        Padding="14,6" FontWeight="Bold" />
-                <Button Content="중지" Command="{Binding StopScanCommand}"
-                        IsEnabled="{Binding IsScanning}" Padding="10,6" />
+            <StackPanel Grid.Column="1" Spacing="6" VerticalAlignment="Center">
+                <!-- 1행: 대역 선택 + 검색/중지 -->
+                <StackPanel Orientation="Horizontal" Spacing="8" HorizontalAlignment="Right">
+                    <TextBlock Text="대역" VerticalAlignment="Center" />
+                    <ComboBox ItemsSource="{Binding Subnets}" SelectedItem="{Binding SelectedSubnet, Mode=TwoWay}"
+                              MinWidth="190" IsEnabled="{Binding !IsScanning}">
+                        <ComboBox.ItemTemplate>
+                            <DataTemplate x:DataType="cfg:SubnetDefinition">
+                                <TextBlock Text="{Binding Display}" />
+                            </DataTemplate>
+                        </ComboBox.ItemTemplate>
+                    </ComboBox>
+                    <Button Content="검색 시작" Command="{Binding StartScanCommand}"
+                            IsEnabled="{Binding !IsScanning}" Background="#2E9E5B" Foreground="White"
+                            Padding="14,6" FontWeight="Bold" />
+                    <Button Content="중지" Command="{Binding StopScanCommand}"
+                            IsEnabled="{Binding IsScanning}" Padding="10,6" />
+                </StackPanel>
+                <!-- 2행: 대역 추가/삭제 (관리자) -->
+                <StackPanel Orientation="Horizontal" Spacing="6" HorizontalAlignment="Right">
+                    <TextBlock Text="대역 관리" VerticalAlignment="Center" FontSize="12" Foreground="#556" />
+                    <TextBox Text="{Binding NewSubnet, Mode=TwoWay}" Watermark="예: 192.168.85"
+                             Width="130" VerticalContentAlignment="Center" IsEnabled="{Binding !IsScanning}" />
+                    <Button Content="＋ 추가" Command="{Binding AddSubnetCommand}" IsEnabled="{Binding !IsScanning}" Padding="8,4" />
+                    <Button Content="삭제" Command="{Binding RemoveSubnetCommand}" IsEnabled="{Binding !IsScanning}" Padding="8,4" />
+                </StackPanel>
             </StackPanel>
         </Grid>
 
