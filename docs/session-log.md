@@ -23,8 +23,8 @@ domain: development
     전 리비전 grep 0건 확인, 빌드 정상, `origin main` force push 완료.
 - **주의**: filter-repo 로 **커밋 해시가 전부 바뀜**. 다른 클론이 있다면 재클론 필요.
   로컬 백업: scratchpad `pre-rewrite-backup.bundle` (실 대역 포함 — 외부 공유 금지).
-- **다음**: public 전환 명령은 에이전트 권한이 차단되어 **사용자가 직접**:
-  `gh repo edit coolmarvel/sh-ip-scanner --visibility public --accept-visibility-change-consequences`
+- **완료**: 사용자가 `! gh repo edit … --visibility public` 직접 실행 → **PUBLIC 전환 확인**
+  (https://github.com/coolmarvel/sh-ip-scanner). 이후 실 대역·내부 정보는 절대 커밋하지 않는다.
 
 ## 2026-08-05 — 기본 대역 하드코딩 제거 + 첫 실행 안내 모달 (v1.0.1)
 

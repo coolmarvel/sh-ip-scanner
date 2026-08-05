@@ -15,9 +15,6 @@ domain: development
 - [ ] **Windows 실환경 검증** — 인스톨러(`sh-ip-scanner-Setup-1.0.1.exe`) 설치 → **첫 실행
       안내 모달→대역 등록** 플로우 확인 → 원내망 스캔 → 주황/연두 색칠 + 한글 PC명(NetBIOS)
       실제로 잡히는지 확인. 안 잡히면 NetBIOS 타임아웃·방화벽(UDP137) 점검.
-- [ ] **public 전환 마무리** — 정리는 끝남(history 재작성·force push 완료, 스크린샷은 애초에
-      .gitignore 로 미추적). 남은 것: `gh repo edit coolmarvel/sh-ip-scanner --visibility public
-      --accept-visibility-change-consequences` 를 **사용자가 직접 실행**(에이전트 권한 차단됨).
 
 ## P2 — 가까운 로드맵
 
