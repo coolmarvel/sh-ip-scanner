@@ -1,4 +1,4 @@
-# CLAUDE.md — sh IP Scanner 작업 가이드
+# CLAUDE.md — sh Manager (sh-pc-manager) 작업 가이드
 
 이 파일은 **세션이 바뀌어도 맥락을 즉시 복구**하기 위한 진입점이다. Claude Code는 세션 시작 시
 이 파일을 자동으로 읽는다. (도구 중립 절대 규칙은 `AGENTS.md`.)
@@ -52,7 +52,7 @@ type: `feat` `fix` `refactor` `chore` `docs` `style` `test` `perf` `ci` `build` 
 ## 이 프로젝트가 뭔가
 
 사내망 PC 를 파악·관리하는 **관리자 콘솔 + 클라이언트 에이전트** 모음(저장소 `sh-pc-manager`,
-내부 솔루션명 `ShIpScanner.*` 유지). 콘솔("sh IP Scanner")은 대역을 핑 스윕해 IP·PC명을 바둑판으로
+내부 솔루션명 `ShIpScanner.*` 유지). 콘솔("sh Manager")은 대역을 핑 스윕해 IP·PC명을 바둑판으로
 보여주고(벤치마킹: `faIpScanner`), 에이전트("sh Agent")는 각 PC 트레이에 상주해 업무종료 자동 종료·
 콘솔 명령(종료/재부팅/잠금/메시지/연장·RDP)을 수행한다. C#/.NET 8 + Avalonia. **결과물 + C# 학습**이
 동시 목적이라 개념 주석을 풍부하게 단다. 왜/무엇: `docs/brief.md`, 스택: `docs/adr/0002-stack.md`,
@@ -88,8 +88,8 @@ dotnet format ShIpScanner.sln --verify-no-changes
 
 # 릴리스 게시 + 인스톨러 (검증됨 — 상세는 docs/guides/packaging.md)
 dotnet publish src/ShIpScanner.App/ShIpScanner.App.csproj -c Release -r win-x64 --self-contained true -p:PublishSingleFile=true -o publish/win-x64
-cd installer && WINEDEBUG=-all wine "C:\\Program Files\\Inno Setup 6\\ISCC.exe" sh-ip-scanner.iss
-cp installer/Output/sh-ip-scanner-Setup-*.exe /mnt/c/Users/user/Desktop/
+cd installer && WINEDEBUG=-all wine "C:\\Program Files\\Inno Setup 6\\ISCC.exe" sh-manager.iss
+cp installer/Output/sh-manager-Setup-*.exe /mnt/c/Users/user/Desktop/
 ```
 
 ## 코드 지도 (수정 시 어디를 보나)
@@ -97,7 +97,7 @@ cp installer/Output/sh-ip-scanner-Setup-*.exe /mnt/c/Users/user/Desktop/
 | 위치 | 역할 |
 |---|---|
 | `src/ShIpScanner.Core/Net/` | `LocalNetwork` — 주 IPv4 자동 감지 + `/24` 대역 추출 |
-| `src/ShIpScanner.Core/Config/` | `SubnetDefinition`·`SubnetStore`(대역 목록, subnets.json, 95→90 마이그레이션) · `ScanSettings`·`ScanSettingsStore`(스캔 옵션, settings.json) — 둘 다 `%APPDATA%\sh IP Scanner\` |
+| `src/ShIpScanner.Core/Config/` | `SubnetDefinition`·`SubnetStore`(대역 목록, subnets.json, 95→90 마이그레이션) · `ScanSettings`·`ScanSettingsStore`(스캔 옵션, settings.json) — 둘 다 `%APPDATA%\sh Manager\` |
 | `src/ShIpScanner.Core/Scanning/` | `SubnetScanner`(병렬 핑 스윕) · `PingOutcome`(record) · `HostState`(enum) |
 | `src/ShIpScanner.Core/Naming/` | `IHostNameResolver` + `NetBiosNameResolver`(UDP137, CP949 한글) · `ReverseDnsResolver` · `CompositeHostNameResolver` |
 | `src/ShIpScanner.App/ViewModels/` | `MainViewModel`(상태·커맨드·스캔 오케스트레이션) · `HostCellViewModel`(셀) |
@@ -108,7 +108,7 @@ cp installer/Output/sh-ip-scanner-Setup-*.exe /mnt/c/Users/user/Desktop/
 | `src/ShIpScanner.Agent/` | **클라이언트 에이전트**(트레이) — `App`(트레이) · `AgentService`(서버+스케줄) · `WindowsSystemController` · `WarningWindow`·`MessageWindow` · `AgentConfig` |
 | `src/ShIpScanner.App/Views/PcControlWindow` | 콘솔의 PC 제어 창(더블클릭) — 종료/재부팅/잠금/메시지/연장/RDP |
 | `src/ShIpScanner.Core.Tests/` | xUnit — 대역·설정·마이그레이션 + 에이전트 프로토콜(스케줄러·서버/클라이언트·인증) |
-| `installer/` | 콘솔 `sh-ip-scanner.iss` / 에이전트 `agent/sh-agent.iss` · `LICENSE.txt`(BOM) · 루트 `LICENSE` |
+| `installer/` | 콘솔 `sh-manager.iss` / 에이전트 `agent/sh-agent.iss` · `LICENSE.txt`(BOM) · 루트 `LICENSE` |
 | `tools/ShotTool/` | (개발용) Avalonia 헤드리스로 UI 를 PNG 캡처 — 솔루션·배포에 미포함 |
 
 **새 기능 추가 = ① `Core` 에 로직·모델 (+ `Core.Tests` 에 테스트) → ② `App/ViewModels` 에 상태·커맨드 바인딩 → ③ `App/Views` XAML 에 화면 → ④ 검증 3종 통과.**

@@ -3,7 +3,7 @@ using System.Text.Json;
 namespace ShIpScanner.Core.Config;
 
 // 스캔 대역 목록을 JSON 으로 저장/로드한다.
-// 저장 위치: %APPDATA%\sh IP Scanner\subnets.json (사용자가 쓰기 가능한 표준 위치 — Program Files 아님).
+// 저장 위치: %APPDATA%\sh Manager\subnets.json (사용자가 쓰기 가능한 표준 위치 — Program Files 아님).
 // 관리자는 앱에서 대역을 추가/삭제하거나, 이 파일을 직접 편집해 여러 대역을 관리한다.
 public sealed class SubnetStore
 {
@@ -15,7 +15,7 @@ public sealed class SubnetStore
     {
         var dir = Path.Combine(
             Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
-            "sh IP Scanner");
+            "sh Manager");
         return Path.Combine(dir, "subnets.json");
     }
 

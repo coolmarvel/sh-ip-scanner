@@ -1,12 +1,12 @@
-; sh Agent — 클라이언트 PC 설치용 (기본 설치본)
-; 저작자/라이센스: 이성현 (SeongHyun Lee).
-; NOTE: 로그온 자동시작 + 방화벽 인바운드 허용은 보안 민감 항목이라 이 스크립트에서 분리했다.
-;       필요한 [Registry]/[Run] 라인은 docs/guides/agent-install-firewall.md 참고(사용자 승인 후 추가).
+; sh Agent — 클라이언트 PC 설치용 (관리자 승인: 로그온 자동시작 + 방화벽 인바운드 허용 포함)
+; 저작자/라이센스: 이성현 (SeongHyun Lee). 용도: 본인이 관리하는 사내망 PC 전원·자산 관리.
+; 배경/대안: docs/guides/agent-install-firewall.md
 
 #define MyAppName "sh Agent"
-#define MyAppVersion "0.1.0"
+#define MyAppVersion "0.2.0"
 #define MyAppPublisher "SeongHyun Lee"
 #define MyAppExeName "ShIpScanner.Agent.exe"
+#define AgentPort "47101"
 
 [Setup]
 AppId={{B7E2A9C1-6F4D-4E8A-9C33-2A1E5D7F0B22}
@@ -42,5 +42,19 @@ Source: "..\..\publish-agent\win-x64\*"; DestDir: "{app}"; Flags: recursesubdirs
 [Icons]
 Name: "{group}\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"
 
+[Registry]
+; 로그온 시 자동 시작(모든 사용자). 제거 시 값 삭제.
+Root: HKLM; Subkey: "Software\Microsoft\Windows\CurrentVersion\Run"; ValueType: string; \
+    ValueName: "shAgent"; ValueData: """{app}\{#MyAppExeName}"""; Flags: uninsdeletevalue
+
 [Run]
+; 방화벽 인바운드 허용(에이전트 포트) — 관리자 콘솔이 접속할 수 있게.
+Filename: "{sys}\netsh.exe"; \
+    Parameters: "advfirewall firewall add rule name=""sh Agent"" dir=in action=allow protocol=TCP localport={#AgentPort}"; \
+    Flags: runhidden; StatusMsg: "방화벽 규칙 추가 중..."
+; 설치 직후 바로 실행(트레이 상주).
 Filename: "{app}\{#MyAppExeName}"; Description: "지금 sh Agent 실행"; Flags: nowait postinstall skipifsilent
+
+[UninstallRun]
+Filename: "{sys}\netsh.exe"; Parameters: "advfirewall firewall delete rule name=""sh Agent"""; Flags: runhidden
+Filename: "{sys}\taskkill.exe"; Parameters: "/f /im {#MyAppExeName}"; Flags: runhidden

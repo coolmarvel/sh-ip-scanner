@@ -33,12 +33,18 @@ updated: 2026-08-05
 - [x] 설정에 에이전트 옵션(공유토큰·포트·탐지 여부)
 - [ ] (향후) 다중 선택 일괄 종료(연장근무 제외), 감사 로그
 
-## Phase 4 — 에이전트 설치관리자 `[~]`
+## Phase 4 — 에이전트 설치관리자 `[x]`
 
-- [x] `installer/agent/sh-agent.iss` — 관리자 권한 설치 + 라이센스 페이지 + 아이콘 (기본 설치본)
-- [ ] **방화벽 인바운드 허용(netsh) + 로그온 자동시작** — 보안 민감(persistence+방화벽+원격종료 패턴)이라
-      기본 설치본에서 분리. 추가 라인은 `docs/guides/agent-install-firewall.md`(사용자 승인 후 반영).
+- [x] `installer/agent/sh-agent.iss` — 관리자 권한 설치 + 라이센스 페이지 + 아이콘
+- [x] **방화벽 인바운드 허용(netsh) + 로그온 자동시작(HKLM Run)** — 사용자 승인 후 반영(0.2.0).
+      제거 시 방화벽 규칙 삭제 + 에이전트 종료. 배경: `docs/guides/agent-install-firewall.md`
 - [ ] 무인 설치 옵션(다수 PC 배포용, `/VERYSILENT` + 토큰/종료시각 파라미터)
+
+## 추가 완료 — 관리자 일정 푸시 + 콘솔 명칭
+
+- [x] **종료 시각은 관리자만 설정**: `SetSchedule` 명령 추가(Shared). 에이전트는 표시·연장(허용 시)만.
+      콘솔 PC 제어 창에 일정 섹션(사용여부·종료시각·자체연장 허용) + 전송. 에이전트 트레이는 확인만.
+- [x] 콘솔 명칭 **sh IP Scanner → sh Manager**(에이전트 `sh Agent` 와 짝). 어셈블리명 ShIpScanner.* 유지.
 
 ## 열린 결정 `[?]`
 

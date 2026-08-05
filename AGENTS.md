@@ -1,4 +1,4 @@
-# AGENTS.md — sh IP Scanner
+# AGENTS.md — sh Manager (sh-pc-manager)
 
 이 파일은 **모든 AI 코딩 에이전트**(Claude Code, Codex, Cursor, Copilot 등)를 위한 진입점이다.
 도구에 상관없이 아래 규칙을 따른다. Claude Code 전용 상세(부팅 프로토콜·하네스)는 `CLAUDE.md`.

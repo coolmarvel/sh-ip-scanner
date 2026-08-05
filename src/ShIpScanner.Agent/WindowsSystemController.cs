@@ -1,6 +1,5 @@
 using System;
 using System.Diagnostics;
-using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using ShIpScanner.Shared;
@@ -8,34 +7,28 @@ using ShIpScanner.Shared;
 namespace ShIpScanner.Agent;
 
 // 실제 Windows 제어 구현. 종료/재부팅은 shutdown.exe, 잠금은 user32!LockWorkStation.
+// 상태 구성·연장·메시지·일정설정은 AgentService 가 넘겨준 콜백으로 위임한다.
 // [주의] Windows 전용 — 다른 OS 에선 호출되지 않는다(에이전트는 Windows 배포 대상).
 public sealed class WindowsSystemController : ISystemController
 {
-    private readonly Func<DateTime?> _nextShutdown;   // 스케줄러에서 다음 종료시각 제공
-    private readonly Func<bool> _extendedNow;
-    private readonly Action<int> _onExtend;           // 콘솔의 연장 명령을 스케줄러에 반영
-    private readonly Action<string> _onMessage;       // 안내 메시지를 UI 로 표시
+    private readonly Func<AgentStatus> _status;
+    private readonly Action<int> _onExtend;
+    private readonly Action<string> _onMessage;
+    private readonly Action<bool, string, bool> _onSetSchedule;
 
-    public WindowsSystemController(Func<DateTime?> nextShutdown, Func<bool> extendedNow,
-                                   Action<int> onExtend, Action<string> onMessage)
+    public WindowsSystemController(Func<AgentStatus> status, Action<int> onExtend,
+                                   Action<string> onMessage, Action<bool, string, bool> onSetSchedule)
     {
-        _nextShutdown = nextShutdown;
-        _extendedNow = extendedNow;
+        _status = status;
         _onExtend = onExtend;
         _onMessage = onMessage;
+        _onSetSchedule = onSetSchedule;
     }
 
     [DllImport("user32.dll")]
     private static extern bool LockWorkStation();
 
-    public AgentStatus GetStatus() => new()
-    {
-        HostName = Environment.MachineName,
-        Version = Assembly.GetExecutingAssembly().GetName().Version?.ToString(3) ?? "0",
-        UserName = Environment.UserName,
-        NextShutdown = _nextShutdown(),
-        ExtendedNow = _extendedNow(),
-    };
+    public AgentStatus GetStatus() => _status();
 
     public Task ShutdownAsync(int delaySeconds, string reason)
     {
@@ -64,6 +57,12 @@ public sealed class WindowsSystemController : ISystemController
     public Task ExtendAsync(int minutes)
     {
         _onExtend(minutes);
+        return Task.CompletedTask;
+    }
+
+    public Task SetScheduleAsync(bool enabled, string shutdownTime, bool allowExtend)
+    {
+        _onSetSchedule(enabled, shutdownTime, allowExtend);
         return Task.CompletedTask;
     }
 

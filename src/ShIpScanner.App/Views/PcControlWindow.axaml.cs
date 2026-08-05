@@ -25,6 +25,50 @@ public partial class PcControlWindow : Window
         AgentText.Text = agentInstalled
             ? $"에이전트 설치됨 (v{agentVersion}) — 전원/세션 제어 가능"
             : "에이전트 미설치 — 원격 접속(RDP)만 가능, 전원 제어는 에이전트 설치 필요";
+
+        // 에이전트가 있으면 현재 일정을 불러와 채운다.
+        if (agentInstalled) _ = LoadScheduleAsync();
+    }
+
+    // 현재 에이전트 상태(관리자 일정)를 조회해 UI 에 반영.
+    private async Task LoadScheduleAsync()
+    {
+        var status = await AgentClient.GetStatusAsync(_ip, _token, _port, timeoutMs: 1200);
+        if (status == null) return;
+        ScheduleEnabledBox.IsChecked = status.ScheduleEnabled;
+        ShutdownTimeBox.Text = status.ShutdownTime;
+        AllowExtendBox.IsChecked = status.AllowExtend;
+    }
+
+    // 관리자가 정한 종료 일정을 에이전트에 전송(종료 시각은 관리자만 설정).
+    private async void OnApplySchedule(object? s, RoutedEventArgs e)
+    {
+        var time = (ShutdownTimeBox.Text ?? "").Trim();
+        if (!TimeOnly.TryParse(time, out _))
+        {
+            ResultText.Foreground = Avalonia.Media.Brushes.IndianRed;
+            ResultText.Text = "종료 시각 형식이 올바르지 않습니다 (예: 19:00).";
+            return;
+        }
+        var req = new CommandRequest
+        {
+            Type = CommandType.SetSchedule,
+            AuthToken = _token,
+            ScheduleEnabled = ScheduleEnabledBox.IsChecked ?? false,
+            ShutdownTime = time,
+            AllowExtend = AllowExtendBox.IsChecked ?? false,
+        };
+        var resp = await AgentClient.SendAsync(_ip, req, _port, timeoutMs: 1500);
+        if (resp is { Ok: true })
+        {
+            ResultText.Foreground = Avalonia.Media.Brushes.Green;
+            ResultText.Text = $"일정 적용됨: {time} 종료 / 자체연장 {(req.AllowExtend ? "허용" : "불가")}.";
+        }
+        else
+        {
+            ResultText.Foreground = Avalonia.Media.Brushes.IndianRed;
+            ResultText.Text = resp == null ? "실패: 에이전트 연결 불가." : $"거부됨: {resp.Error}";
+        }
     }
 
     private async Task SendAsync(CommandType type, string? text = null, int extend = 60)

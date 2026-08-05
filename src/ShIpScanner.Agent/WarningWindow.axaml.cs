@@ -22,7 +22,7 @@ public partial class WarningWindow : Window
         _onShutdownNow = onShutdownNow;
 
         ExtendButton.IsEnabled = canExtend;
-        ExtendButton.Content = canExtend ? $"연장 ({extendMinutes}분)" : "연장 불가";
+        ExtendButton.Content = canExtend ? $"연장 ({extendMinutes}분)" : "연장은 관리자 요청";
 
         UpdateCountdown();
         _timer = new DispatcherTimer { Interval = TimeSpan.FromSeconds(1) };

@@ -1,15 +1,15 @@
 <Window xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         x:Class="ShIpScanner.App.Views.PcControlWindow"
-        Width="420" Height="380"
+        Width="440" Height="520"
         WindowStartupLocation="CenterOwner"
         CanResize="False"
         Icon="/Assets/appicon.ico"
         Title="PC 제어">
 
-    <Grid Margin="18" RowDefinitions="Auto,Auto,Auto,Auto,Auto,*,Auto">
+    <Grid Margin="18" RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto,Auto,*,Auto">
         <TextBlock Grid.Row="0" x:Name="HeaderText" FontSize="15" FontWeight="Bold" />
-        <TextBlock Grid.Row="1" x:Name="AgentText" FontSize="12" Foreground="#667" Margin="0,2,0,12" />
+        <TextBlock Grid.Row="1" x:Name="AgentText" FontSize="12" Foreground="#667" Margin="0,2,0,12" TextWrapping="Wrap" />
 
         <!-- 전원/세션 제어 -->
         <StackPanel Grid.Row="2" Orientation="Horizontal" Spacing="8" Margin="0,0,0,8">
@@ -24,18 +24,32 @@
             <Button Content="원격 접속 (RDP)" Click="OnRdp" Padding="14,7" />
         </StackPanel>
 
+        <!-- 자동 종료 일정 (관리자만 설정) -->
+        <Border Grid.Row="4" BorderBrush="#D0D6DE" BorderThickness="1" CornerRadius="4" Padding="12" Margin="0,0,0,10">
+            <StackPanel Spacing="8">
+                <TextBlock Text="자동 종료 일정 (관리자 설정)" FontSize="13" FontWeight="Bold" />
+                <CheckBox x:Name="ScheduleEnabledBox" Content="자동 종료 사용" FontSize="13" />
+                <StackPanel Orientation="Horizontal" Spacing="8">
+                    <TextBlock Text="종료 시각" VerticalAlignment="Center" FontSize="13" />
+                    <TextBox x:Name="ShutdownTimeBox" Width="80" Watermark="19:00" VerticalContentAlignment="Center" />
+                    <CheckBox x:Name="AllowExtendBox" Content="사용자 자체 연장 허용" FontSize="13" VerticalAlignment="Center" />
+                </StackPanel>
+                <Button Content="일정 적용(에이전트에 전송)" Click="OnApplySchedule" HorizontalAlignment="Left" Padding="12,6" />
+            </StackPanel>
+        </Border>
+
         <!-- 메시지 -->
-        <StackPanel Grid.Row="4" Spacing="6">
+        <StackPanel Grid.Row="5" Spacing="6">
             <TextBlock Text="안내 메시지 보내기" FontSize="13" />
             <StackPanel Orientation="Horizontal" Spacing="8">
-                <TextBox x:Name="MessageBox" Width="250" Watermark="예: 19시에 종료됩니다" />
+                <TextBox x:Name="MessageBox" Width="260" Watermark="예: 19시에 종료됩니다" />
                 <Button Content="전송" Click="OnMessage" Padding="14,6" />
             </StackPanel>
         </StackPanel>
 
-        <TextBlock Grid.Row="5" x:Name="ResultText" FontSize="12" Foreground="#2E7D32" TextWrapping="Wrap"
+        <TextBlock Grid.Row="7" x:Name="ResultText" FontSize="12" Foreground="#2E7D32" TextWrapping="Wrap"
                    VerticalAlignment="Bottom" Margin="0,10,0,0" />
 
-        <Button Grid.Row="6" Content="닫기" Click="OnClose" HorizontalAlignment="Right" Margin="0,10,0,0" Padding="20,6" />
+        <Button Grid.Row="8" Content="닫기" Click="OnClose" HorizontalAlignment="Right" Margin="0,10,0,0" Padding="20,6" />
     </Grid>
 </Window>

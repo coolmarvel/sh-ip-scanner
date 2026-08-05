@@ -94,4 +94,19 @@ public class AgentServerClientTests
         Assert.Equal(0, ctrl.ShutdownCalls); // 인증 실패 → 아무 동작 안 함
         cts.Cancel();
     }
+
+    [Fact]
+    public async Task SetSchedule_Reaches_Controller()
+    {
+        var ctrl = new TestSystemController();
+        var (_, port, cts, _) = await StartAsync(ctrl);
+
+        var resp = await AgentClient.SendAsync("127.0.0.1",
+            new CommandRequest { Type = CommandType.SetSchedule, AuthToken = Token, ShutdownTime = "18:30", AllowExtend = false }, port, 1500);
+
+        Assert.NotNull(resp);
+        Assert.True(resp!.Ok);
+        Assert.Equal("18:30", ctrl.LastScheduleTime);
+        cts.Cancel();
+    }
 }

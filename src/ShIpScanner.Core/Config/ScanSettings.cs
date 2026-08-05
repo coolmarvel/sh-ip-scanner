@@ -1,6 +1,6 @@
 namespace ShIpScanner.Core.Config;
 
-// 스캔 옵션(설정 모달에서 조정, %APPDATA%\sh IP Scanner\settings.json 저장).
+// 스캔 옵션(설정 모달에서 조정, %APPDATA%\sh Manager\settings.json 저장).
 public sealed class ScanSettings
 {
     public int TimeoutMs { get; set; } = 1000;   // 핑 타임아웃(ms)

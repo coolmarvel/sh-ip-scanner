@@ -11,6 +11,7 @@ public interface ISystemController
     Task LockAsync();
     Task ShowMessageAsync(string text);
     Task ExtendAsync(int minutes);
+    Task SetScheduleAsync(bool enabled, string shutdownTime, bool allowExtend); // 관리자 일정 푸시
 }
 
 // 테스트/개발용 — 실제로 끄지 않고 호출만 기록한다.
@@ -22,6 +23,7 @@ public sealed class TestSystemController : ISystemController
     public int LockCalls { get; private set; }
     public int ExtendCalls { get; private set; }
     public string? LastMessage { get; private set; }
+    public string? LastScheduleTime { get; private set; }
 
     public AgentStatus GetStatus() => Status;
     public Task ShutdownAsync(int delaySeconds, string reason) { ShutdownCalls++; return Task.CompletedTask; }
@@ -29,4 +31,5 @@ public sealed class TestSystemController : ISystemController
     public Task LockAsync() { LockCalls++; return Task.CompletedTask; }
     public Task ShowMessageAsync(string text) { LastMessage = text; return Task.CompletedTask; }
     public Task ExtendAsync(int minutes) { ExtendCalls++; return Task.CompletedTask; }
+    public Task SetScheduleAsync(bool enabled, string shutdownTime, bool allowExtend) { LastScheduleTime = shutdownTime; return Task.CompletedTask; }
 }

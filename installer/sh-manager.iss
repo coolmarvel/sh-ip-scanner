@@ -1,8 +1,8 @@
-; sh IP Scanner — Inno Setup 스크립트 (docs/guides/packaging.md 참고)
+; sh Manager — Inno Setup 스크립트 (docs/guides/packaging.md 참고)
 ; 저작자/라이센스: 이성현 (SeongHyun Lee). 설치 시 라이센스 동의 페이지에 이름·서명이 표시된다.
 
-#define MyAppName "sh IP Scanner"
-#define MyAppVersion "0.6.0"
+#define MyAppName "sh Manager"
+#define MyAppVersion "0.7.0"
 #define MyAppPublisher "SeongHyun Lee"
 #define MyAppExeName "ShIpScanner.App.exe"
 
@@ -18,7 +18,7 @@ AppCopyright=Copyright (C) 2026 SeongHyun Lee
 LicenseFile=LICENSE.txt
 DefaultDirName={autopf}\{#MyAppName}
 DefaultGroupName={#MyAppName}
-OutputBaseFilename=sh-ip-scanner-Setup-{#MyAppVersion}
+OutputBaseFilename=sh-manager-Setup-{#MyAppVersion}
 OutputDir=Output
 Compression=lzma2
 SolidCompression=yes

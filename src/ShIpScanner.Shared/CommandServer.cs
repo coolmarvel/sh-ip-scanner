@@ -105,6 +105,9 @@ public sealed class CommandServer
             case CommandType.ExtendSession:
                 await _controller.ExtendAsync(req.ExtendMinutes);
                 return CommandResponse.Success(_controller.GetStatus());
+            case CommandType.SetSchedule:
+                await _controller.SetScheduleAsync(req.ScheduleEnabled, req.ShutdownTime ?? "", req.AllowExtend);
+                return CommandResponse.Success(_controller.GetStatus());
             default:
                 return CommandResponse.Fail("알 수 없는 명령");
         }
