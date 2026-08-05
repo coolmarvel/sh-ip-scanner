@@ -1,0 +1,24 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        x:Class="ShIpScanner.Agent.WarningWindow"
+        Width="460" Height="260"
+        WindowStartupLocation="CenterScreen"
+        CanResize="False"
+        Topmost="True"
+        Icon="/Assets/agenticon.ico"
+        Title="PC 자동 종료 안내">
+
+    <Grid Margin="24" RowDefinitions="Auto,Auto,*,Auto" Background="Transparent">
+        <TextBlock Grid.Row="0" Text="업무 시간이 종료되어 PC가 곧 종료됩니다."
+                   FontSize="16" FontWeight="Bold" TextWrapping="Wrap" />
+        <TextBlock Grid.Row="1" x:Name="CountdownText" Text="남은 시간 --:--"
+                   FontSize="28" FontWeight="Bold" Foreground="#C0392B" Margin="0,12" />
+        <TextBlock Grid.Row="2" Text="열려 있는 문서를 저장하세요. 연장근무 시 [연장]을 누르면 종료가 미뤄집니다."
+                   FontSize="13" Foreground="#445" TextWrapping="Wrap" />
+        <StackPanel Grid.Row="3" Orientation="Horizontal" Spacing="10" HorizontalAlignment="Right">
+            <Button x:Name="ExtendButton" Content="연장" Click="OnExtend" Padding="18,8" FontWeight="Bold" />
+            <Button Content="지금 저장 후 종료" Click="OnShutdownNow" Padding="14,8"
+                    Background="#C0392B" Foreground="White" />
+        </StackPanel>
+    </Grid>
+</Window>

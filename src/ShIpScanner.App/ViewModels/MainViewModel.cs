@@ -9,6 +9,7 @@ using ShIpScanner.Core.Config;
 using ShIpScanner.Core.Naming;
 using ShIpScanner.Core.Net;
 using ShIpScanner.Core.Scanning;
+using ShIpScanner.Shared;
 
 namespace ShIpScanner.App.ViewModels;
 
@@ -39,6 +40,11 @@ public partial class MainViewModel : ViewModelBase
     [ObservableProperty] private int _maxParallel = 128;
     [ObservableProperty] private bool _resolveNames = true;
 
+    // 에이전트 연동 옵션.
+    [ObservableProperty] private string _agentToken = "change-me";
+    [ObservableProperty] private int _agentPort = 47101;
+    [ObservableProperty] private bool _detectAgents = true;
+
     public MainViewModel()
     {
         // 저장된 스캔 옵션 로드.
@@ -46,6 +52,9 @@ public partial class MainViewModel : ViewModelBase
         TimeoutMs = st.TimeoutMs;
         MaxParallel = st.MaxParallel;
         ResolveNames = st.ResolveNames;
+        AgentToken = st.AgentToken;
+        AgentPort = st.AgentPort;
+        DetectAgents = st.DetectAgents;
 
         // 저장된 대역 목록 로드(없으면 기본 3개).
         foreach (var d in _store.Load()) Subnets.Add(d);
@@ -143,28 +152,50 @@ public partial class MainViewModel : ViewModelBase
         cell.RttMs = o.RttMs;
         AliveCount++;
 
-        if (!ResolveNames)
+        // PC명 조회(옵션).
+        if (ResolveNames)
         {
-            AddLog($"IP:{o.Ip} >>>> 사용 중입니다.");
-            return;
-        }
-
-        var name = await _resolver.ResolveAsync(o.Ip, _cts?.Token ?? CancellationToken.None);
-        if (!string.IsNullOrWhiteSpace(name))
-        {
-            cell.HostName = name;
-            AddLog($"IP:{o.Ip} >>>> {name} 이(가) 사용 중입니다.");
+            var name = await _resolver.ResolveAsync(o.Ip, _cts?.Token ?? CancellationToken.None);
+            if (!string.IsNullOrWhiteSpace(name))
+            {
+                cell.HostName = name;
+                AddLog($"IP:{o.Ip} >>>> {name} 이(가) 사용 중입니다.");
+            }
+            else
+            {
+                AddLog($"IP:{o.Ip} >>>> (이름 미확인) 사용 중입니다.");
+            }
         }
         else
         {
-            AddLog($"IP:{o.Ip} >>>> (이름 미확인) 사용 중입니다.");
+            AddLog($"IP:{o.Ip} >>>> 사용 중입니다.");
+        }
+
+        // 에이전트 설치 여부 조회(옵션). 응답이 오면 설치·온라인으로 표시.
+        if (DetectAgents)
+        {
+            var status = await AgentClient.GetStatusAsync(o.Ip, AgentToken, AgentPort, timeoutMs: 600);
+            if (status != null)
+            {
+                cell.AgentInstalled = true;
+                cell.AgentVersion = status.Version;
+                AddLog($"    └ 에이전트 감지: {o.Ip} (v{status.Version})");
+            }
         }
     }
 
     // 설정 저장(설정 모달의 [저장]에서 호출).
     [RelayCommand]
     private void SaveSettings()
-        => _settingsStore.Save(new ScanSettings { TimeoutMs = TimeoutMs, MaxParallel = MaxParallel, ResolveNames = ResolveNames });
+        => _settingsStore.Save(new ScanSettings
+        {
+            TimeoutMs = TimeoutMs,
+            MaxParallel = MaxParallel,
+            ResolveNames = ResolveNames,
+            AgentToken = AgentToken,
+            AgentPort = AgentPort,
+            DetectAgents = DetectAgents,
+        });
 
     [RelayCommand]
     private void StopScan() => _cts?.Cancel();

@@ -1,0 +1,41 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        x:Class="ShIpScanner.App.Views.PcControlWindow"
+        Width="420" Height="380"
+        WindowStartupLocation="CenterOwner"
+        CanResize="False"
+        Icon="/Assets/appicon.ico"
+        Title="PC 제어">
+
+    <Grid Margin="18" RowDefinitions="Auto,Auto,Auto,Auto,Auto,*,Auto">
+        <TextBlock Grid.Row="0" x:Name="HeaderText" FontSize="15" FontWeight="Bold" />
+        <TextBlock Grid.Row="1" x:Name="AgentText" FontSize="12" Foreground="#667" Margin="0,2,0,12" />
+
+        <!-- 전원/세션 제어 -->
+        <StackPanel Grid.Row="2" Orientation="Horizontal" Spacing="8" Margin="0,0,0,8">
+            <Button Content="종료" Click="OnShutdown" Background="#C0392B" Foreground="White" Padding="16,7" />
+            <Button Content="재부팅" Click="OnReboot" Padding="14,7" />
+            <Button Content="잠금" Click="OnLock" Padding="14,7" />
+            <Button Content="연장(60분)" Click="OnExtend" Padding="12,7" />
+        </StackPanel>
+
+        <!-- 원격 접속 -->
+        <StackPanel Grid.Row="3" Orientation="Horizontal" Spacing="8" Margin="0,0,0,10">
+            <Button Content="원격 접속 (RDP)" Click="OnRdp" Padding="14,7" />
+        </StackPanel>
+
+        <!-- 메시지 -->
+        <StackPanel Grid.Row="4" Spacing="6">
+            <TextBlock Text="안내 메시지 보내기" FontSize="13" />
+            <StackPanel Orientation="Horizontal" Spacing="8">
+                <TextBox x:Name="MessageBox" Width="250" Watermark="예: 19시에 종료됩니다" />
+                <Button Content="전송" Click="OnMessage" Padding="14,6" />
+            </StackPanel>
+        </StackPanel>
+
+        <TextBlock Grid.Row="5" x:Name="ResultText" FontSize="12" Foreground="#2E7D32" TextWrapping="Wrap"
+                   VerticalAlignment="Bottom" Margin="0,10,0,0" />
+
+        <Button Grid.Row="6" Content="닫기" Click="OnClose" HorizontalAlignment="Right" Margin="0,10,0,0" Padding="20,6" />
+    </Grid>
+</Window>

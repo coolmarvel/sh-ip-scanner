@@ -2,7 +2,7 @@
 ; 저작자/라이센스: 이성현 (SeongHyun Lee). 설치 시 라이센스 동의 페이지에 이름·서명이 표시된다.
 
 #define MyAppName "sh IP Scanner"
-#define MyAppVersion "0.5.0"
+#define MyAppVersion "0.6.0"
 #define MyAppPublisher "SeongHyun Lee"
 #define MyAppExeName "ShIpScanner.App.exe"
 

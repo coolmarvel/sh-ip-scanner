@@ -12,6 +12,26 @@ domain: development
 
 블록 형식: `## YYYY-MM-DD — 제목` 아래에 **요청/피드백 → 수정 → 검증 → 다음** 순서로 간결하게.
 
+## 2026-08-05 — 에이전트 앱 + 콘솔 통합 + 레포명 변경 (Phase 2·3, 인스톨러 2개)
+
+- **요청**: 에이전트(트레이 앱) + 설치관리자로 바탕화면 인스톨러 2개, 에이전트 아이콘·라이센스,
+  레포명 변경.
+- **수정**:
+  - **레포/폴더명 → `sh-pc-manager`** (GitHub 비공개 유지, 리모트 갱신). 내부 솔루션명 ShIpScanner.* 유지.
+  - **Phase 2 에이전트**(`ShIpScanner.Agent`): Avalonia **트레이 상주**(창 없음, 메뉴 상태/연장/종료),
+    `WindowsSystemController`(shutdown.exe·LockWorkStation), `AgentService`(명령서버+스케줄 감시),
+    `WarningWindow`(카운트다운·연장·즉시종료)·`MessageWindow`, `AgentConfig`(%APPDATA%\sh Agent).
+    **아이콘**(틸 모니터+전원) + 라이센스.
+  - **Phase 3 콘솔**: 스캔 시 에이전트 프로브 → 셀 우상단 **파란 배지** + 로그, 셀 **더블클릭 → PC 제어 창**
+    (종료·재부팅·잠금·메시지·연장·**RDP**), 설정에 토큰/포트/탐지.
+  - **인스톨러 2개**: `sh-ip-scanner-Setup-0.6.0.exe`(콘솔) + `sh-agent-Setup-0.1.0.exe`(에이전트).
+- **안전/차단**: 에이전트 설치관리자의 **자동시작+방화벽(netsh)+taskkill** 조합이 안전 분류기에 막힘
+  (persistence+방화벽+원격종료 = RAT 패턴). 정당한 용도지만 우회하지 않고 **기본 설치본에서 분리**,
+  추가 라인은 `docs/guides/agent-install-firewall.md` 로 문서화(사용자 승인 후 반영).
+- **검증**: build·format clean, `dotnet test` **17개**. 헤드리스로 콘솔(배지)·PC 제어 창·설정·에이전트
+  경고/메시지 창 렌더 확인. 인스톨러 2종 wine 컴파일 성공 → 바탕화면 복사.
+- **다음**: (사용자 승인 시) 방화벽/자동시작 반영, 무인 설치. Windows 실환경 end-to-end 테스트.
+
 ## 2026-08-05 — 엔드포인트 에이전트 착수: 설계 + 통신 코어(Phase 1)
 
 - **요청**: 관리자가 클라이언트 PC 를 제어(원격 접속·업무종료 후 자동 종료, 연장근무 예외).
