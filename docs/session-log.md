@@ -14,7 +14,7 @@ domain: development
 
 ## 2026-08-05 — 기본 대역 하드코딩 제거 + 첫 실행 안내 모달 (v1.0.1)
 
-- **요청**: 코드에 디폴트로 박힌 실 운영 대역(192.168.80.xxx)을 지우고, 첫 실행 때 안내
+- **요청**: 코드에 디폴트로 박힌 실 운영 대역을 지우고, 첫 실행 때 안내
   모달/팝업으로 대역을 등록하게 하자. 그러면 레포를 public 으로 전환할 수도 있음.
 - **수정**:
   - `SubnetStore`: `Defaults()`(하드코딩 3개 대역)·`MigrateLegacyTypo`(95→90, 실 IP 포함) 삭제.
@@ -23,7 +23,7 @@ domain: development
   - **`FirstRunWindow` 신설**: 첫 실행 때 "스캔할 대역을 등록해 주세요" 안내 + 감지된 내 IP 표시
     (감지 실패 시 직접 등록 안내). [대역 관리 열기] → 곧바로 대역 관리 모달. `MainWindow.Opened` 에서 구동.
   - 코드·주석·XAML 예시·테스트·ShotTool·docs(README/brief/changelog/session-log/todo/plans)의
-    실 대역을 전부 일반 예시(192.168.x)로 치환. `grep 192.168` → 텍스트 파일 기준 0건.
+    실 대역을 전부 일반 예시(192.168.x)로 치환. 실 대역 grep → 텍스트 파일 기준 0건.
   - 테스트 교체: Defaults/마이그레이션 테스트 삭제 → 파일 없으면 빈 목록·무효/중복 필터 테스트.
   - 버전 **1.0.1**(PATCH): csproj·`.iss`·AboutWindow.
 - **주의(공개 전환 전 남은 리스크)**: ① **git history** 에 실 대역·커밋들이 그대로 남아 있음 —
