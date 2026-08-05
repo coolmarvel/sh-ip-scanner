@@ -22,7 +22,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\ShIpScanner.Core\ShIpScanner.Core.csproj" />
-    <ProjectReference Include="..\ShIpScanner.Shared\ShIpScanner.Shared.csproj" />
   </ItemGroup>
 
 </Project>

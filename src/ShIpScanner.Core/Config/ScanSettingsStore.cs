@@ -2,7 +2,7 @@ using System.Text.Json;
 
 namespace ShIpScanner.Core.Config;
 
-// 스캔 옵션을 JSON 으로 저장/로드. 위치는 SubnetStore 와 같은 %APPDATA%\sh Manager\settings.json.
+// 스캔 옵션을 JSON 으로 저장/로드. 위치는 SubnetStore 와 같은 %APPDATA%\sh IP Scanner\settings.json.
 public sealed class ScanSettingsStore
 {
     private readonly string _path;
@@ -13,7 +13,7 @@ public sealed class ScanSettingsStore
     {
         var dir = Path.Combine(
             Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
-            "sh Manager");
+            "sh IP Scanner");
         return Path.Combine(dir, "settings.json");
     }
 

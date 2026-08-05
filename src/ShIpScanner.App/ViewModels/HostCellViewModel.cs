@@ -18,6 +18,4 @@ public partial class HostCellViewModel : ObservableObject
     [ObservableProperty] private HostState _state = HostState.Unknown; // 색(흰/주황/연두)을 결정
     [ObservableProperty] private string _hostName = "";             // 예: "관리부-PC01"
     [ObservableProperty] private long _rttMs;                       // 왕복 시간(툴팁용)
-    [ObservableProperty] private bool _agentInstalled;              // sh Agent 설치·응답 여부
-    [ObservableProperty] private string _agentVersion = "";         // 에이전트 버전
 }

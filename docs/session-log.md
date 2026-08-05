@@ -12,55 +12,6 @@ domain: development
 
 블록 형식: `## YYYY-MM-DD — 제목` 아래에 **요청/피드백 → 수정 → 검증 → 다음** 순서로 간결하게.
 
-## 2026-08-05 — 관리자 일정 푸시 + 방화벽/자동시작 + 콘솔명 sh Manager (콘솔 0.7.0 / 에이전트 0.2.0)
-
-- **요청/승인**: (1) 방화벽+자동시작 라인 승인 → 에이전트 설치관리자에 반영. (2) **종료 시각은
-  에이전트에서 설정 못하게, 관리자만** — 에이전트는 확인만/연장 요청. (3) 콘솔 명칭 변경.
-- **수정**:
-  - 프로토콜 `SetSchedule` 추가(Shared). 에이전트 `ApplySchedule`(일정 교체·저장), 상태에 종료시각/
-    자체연장 여부 포함. 콘솔 **PC 제어 창에 일정 섹션**(사용여부·종료시각·자체연장 허용) + 전송.
-    에이전트 트레이·경고창은 표시/요청만("연장은 관리자 요청").
-  - 에이전트 설치관리자 `sh-agent.iss`(0.2.0): **HKLM Run 자동시작 + netsh 방화벽 허용**, 제거 시 정리.
-  - **콘솔 명칭 sh IP Scanner → sh Manager** (코드·설치·라이센스·현재 docs). APPDATA 도 `sh Manager`.
-    인스톨러 파일 `sh-manager.iss`(구 sh-ip-scanner.iss). 어셈블리 ShIpScanner.* 유지. 과거 docs 는 히스토리로 보존.
-- **검증**: build·format clean, `dotnet test` **18개**(+SetSchedule 왕복). 헤드리스로 제어창(일정)·정보창
-  확인. 인스톨러 2종 재컴파일 → 바탕화면 갱신(`sh-manager-Setup-0.7.0` + `sh-agent-Setup-0.2.0`).
-- **다음**: Windows end-to-end(에이전트 설치→자동시작·방화벽→콘솔 배지→일정 푸시→자동 종료·연장) 테스트.
-
-## 2026-08-05 — 에이전트 앱 + 콘솔 통합 + 레포명 변경 (Phase 2·3, 인스톨러 2개)
-
-- **요청**: 에이전트(트레이 앱) + 설치관리자로 바탕화면 인스톨러 2개, 에이전트 아이콘·라이센스,
-  레포명 변경.
-- **수정**:
-  - **레포/폴더명 → `sh-pc-manager`** (GitHub 비공개 유지, 리모트 갱신). 내부 솔루션명 ShIpScanner.* 유지.
-  - **Phase 2 에이전트**(`ShIpScanner.Agent`): Avalonia **트레이 상주**(창 없음, 메뉴 상태/연장/종료),
-    `WindowsSystemController`(shutdown.exe·LockWorkStation), `AgentService`(명령서버+스케줄 감시),
-    `WarningWindow`(카운트다운·연장·즉시종료)·`MessageWindow`, `AgentConfig`(%APPDATA%\sh Agent).
-    **아이콘**(틸 모니터+전원) + 라이센스.
-  - **Phase 3 콘솔**: 스캔 시 에이전트 프로브 → 셀 우상단 **파란 배지** + 로그, 셀 **더블클릭 → PC 제어 창**
-    (종료·재부팅·잠금·메시지·연장·**RDP**), 설정에 토큰/포트/탐지.
-  - **인스톨러 2개**: `sh-ip-scanner-Setup-0.6.0.exe`(콘솔) + `sh-agent-Setup-0.1.0.exe`(에이전트).
-- **안전/차단**: 에이전트 설치관리자의 **자동시작+방화벽(netsh)+taskkill** 조합이 안전 분류기에 막힘
-  (persistence+방화벽+원격종료 = RAT 패턴). 정당한 용도지만 우회하지 않고 **기본 설치본에서 분리**,
-  추가 라인은 `docs/guides/agent-install-firewall.md` 로 문서화(사용자 승인 후 반영).
-- **검증**: build·format clean, `dotnet test` **17개**. 헤드리스로 콘솔(배지)·PC 제어 창·설정·에이전트
-  경고/메시지 창 렌더 확인. 인스톨러 2종 wine 컴파일 성공 → 바탕화면 복사.
-- **다음**: (사용자 승인 시) 방화벽/자동시작 반영, 무인 설치. Windows 실환경 end-to-end 테스트.
-
-## 2026-08-05 — 엔드포인트 에이전트 착수: 설계 + 통신 코어(Phase 1)
-
-- **요청**: 관리자가 클라이언트 PC 를 제어(원격 접속·업무종료 후 자동 종료, 연장근무 예외).
-  에이전트를 각 PC 에 설치(트레이 상주·자동시작), 콘솔에서 설치 여부·상태 조회.
-- **결정(AskUserQuestion)**: 저장소 확장(Admin+Agent+Shared) · **LAN 직접** 통신(+설치 시 방화벽/권한) ·
-  **Windows RDP** 활용 · 자동 종료 **스케줄+수동 둘 다**. → `docs/adr/0003-endpoint-agent.md`.
-- **수정(Phase 1)**: `ShIpScanner.Shared` 신설 — 프로토콜(Status/Shutdown/Reboot/Lock/Message/Extend),
-  `CommandServer`(TCP 수신·**AuthToken 인증**·ISystemController 위임), `AgentClient`(상태조회/명령),
-  `ShutdownScheduler`(종료시각·경고·연장 순수 로직), `TestSystemController`.
-  **안전장치 설계에 못박음**: 인증된 명령만·부드러운 종료(경고→저장유예→연장)·감사.
-- **검증**: build 성공, `dotnet test` **17개**(스케줄러·서버/클라이언트 루프백 왕복·**잘못된 토큰→무동작**).
-- **다음(Phase 2)**: 에이전트 트레이 앱(Avalonia TrayIcon) + WindowsSystemController + 로컬 스케줄 경고 UI.
-  이어서 Phase 3 콘솔 통합(설치여부 표식·명령·RDP), Phase 4 에이전트 설치관리자(방화벽·자동시작).
-
 ## 2026-08-05 — 좌상단 메뉴+모달 · UI 정리 · 대역 오타 교정 (v0.5.0)
 
 - **피드백**: (1) 기본 대역 오타 — 95 가 아니라 **192.168.90**. (2) 내 IP~대역관리가 한 줄에 몰려

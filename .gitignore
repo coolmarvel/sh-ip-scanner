@@ -29,7 +29,3 @@ installer/Output/
 # Rider/VS
 .idea/
 .vs/
-
-# 에이전트 게시/설치 산출물
-publish-agent/
-installer/agent/Output/

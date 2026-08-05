@@ -2,7 +2,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\src\ShIpScanner.App\ShIpScanner.App.csproj" />
-    <ProjectReference Include="..\..\src\ShIpScanner.Agent\ShIpScanner.Agent.csproj" />
   </ItemGroup>
 
   <ItemGroup>
