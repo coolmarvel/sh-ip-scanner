@@ -11,6 +11,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ShIpScanner.App", "src\ShIp
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ShIpScanner.Core.Tests", "src\ShIpScanner.Core.Tests\ShIpScanner.Core.Tests.csproj", "{E9C97A02-361B-4CEF-8C21-386E7FAAA5A0}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ShIpScanner.Shared", "src\ShIpScanner.Shared\ShIpScanner.Shared.csproj", "{CDED8E92-B13D-432B-950C-D5ABE1FDD933}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -32,10 +34,15 @@ Global
 		{E9C97A02-361B-4CEF-8C21-386E7FAAA5A0}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E9C97A02-361B-4CEF-8C21-386E7FAAA5A0}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E9C97A02-361B-4CEF-8C21-386E7FAAA5A0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CDED8E92-B13D-432B-950C-D5ABE1FDD933}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CDED8E92-B13D-432B-950C-D5ABE1FDD933}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CDED8E92-B13D-432B-950C-D5ABE1FDD933}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CDED8E92-B13D-432B-950C-D5ABE1FDD933}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{D5C5FC33-1563-41FC-8FAC-F59A0660FD44} = {9697ADA9-D9D1-44B9-ABB0-5139AC8FCF2A}
 		{B1084EC1-41A5-48E3-81FB-EAC5B098CC99} = {9697ADA9-D9D1-44B9-ABB0-5139AC8FCF2A}
 		{E9C97A02-361B-4CEF-8C21-386E7FAAA5A0} = {9697ADA9-D9D1-44B9-ABB0-5139AC8FCF2A}
+		{CDED8E92-B13D-432B-950C-D5ABE1FDD933} = {9697ADA9-D9D1-44B9-ABB0-5139AC8FCF2A}
 	EndGlobalSection
 EndGlobal

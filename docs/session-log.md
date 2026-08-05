@@ -12,6 +12,20 @@ domain: development
 
 블록 형식: `## YYYY-MM-DD — 제목` 아래에 **요청/피드백 → 수정 → 검증 → 다음** 순서로 간결하게.
 
+## 2026-08-05 — 엔드포인트 에이전트 착수: 설계 + 통신 코어(Phase 1)
+
+- **요청**: 관리자가 클라이언트 PC 를 제어(원격 접속·업무종료 후 자동 종료, 연장근무 예외).
+  에이전트를 각 PC 에 설치(트레이 상주·자동시작), 콘솔에서 설치 여부·상태 조회.
+- **결정(AskUserQuestion)**: 저장소 확장(Admin+Agent+Shared) · **LAN 직접** 통신(+설치 시 방화벽/권한) ·
+  **Windows RDP** 활용 · 자동 종료 **스케줄+수동 둘 다**. → `docs/adr/0003-endpoint-agent.md`.
+- **수정(Phase 1)**: `ShIpScanner.Shared` 신설 — 프로토콜(Status/Shutdown/Reboot/Lock/Message/Extend),
+  `CommandServer`(TCP 수신·**AuthToken 인증**·ISystemController 위임), `AgentClient`(상태조회/명령),
+  `ShutdownScheduler`(종료시각·경고·연장 순수 로직), `TestSystemController`.
+  **안전장치 설계에 못박음**: 인증된 명령만·부드러운 종료(경고→저장유예→연장)·감사.
+- **검증**: build 성공, `dotnet test` **17개**(스케줄러·서버/클라이언트 루프백 왕복·**잘못된 토큰→무동작**).
+- **다음(Phase 2)**: 에이전트 트레이 앱(Avalonia TrayIcon) + WindowsSystemController + 로컬 스케줄 경고 UI.
+  이어서 Phase 3 콘솔 통합(설치여부 표식·명령·RDP), Phase 4 에이전트 설치관리자(방화벽·자동시작).
+
 ## 2026-08-05 — 좌상단 메뉴+모달 · UI 정리 · 대역 오타 교정 (v0.5.0)
 
 - **피드백**: (1) 기본 대역 오타 — 95 가 아니라 **192.168.90**. (2) 내 IP~대역관리가 한 줄에 몰려
