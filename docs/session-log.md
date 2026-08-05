@@ -12,6 +12,20 @@ domain: development
 
 블록 형식: `## YYYY-MM-DD — 제목` 아래에 **요청/피드백 → 수정 → 검증 → 다음** 순서로 간결하게.
 
+## 2026-08-05 — git history 실 대역 정리(재작성) + public 전환 준비
+
+- **요청**: 작업 내역 전부 커밋·푸시 + 레포 public 전환. 방식 확인 결과 **"정리 후 public"** 선택.
+- **수정**:
+  - 커밋 2건 분리: ① 에이전트 롤백(v1.0.0, revert) ② 기본 대역 제거+첫 실행 모달(v1.0.1, feat) → push.
+  - 조사: feedback-archive 스크린샷은 **애초에 .gitignore 로 미추적**(history 에 없음) — 유일한
+    노출 벡터는 과거 커밋 텍스트 blob 의 실 대역뿐.
+  - `git filter-repo --replace-text` 로 전 history 의 실 대역을 192.168 로 치환(사전에 bundle 백업).
+    전 리비전 grep 0건 확인, 빌드 정상, `origin main` force push 완료.
+- **주의**: filter-repo 로 **커밋 해시가 전부 바뀜**. 다른 클론이 있다면 재클론 필요.
+  로컬 백업: scratchpad `pre-rewrite-backup.bundle` (실 대역 포함 — 외부 공유 금지).
+- **다음**: public 전환 명령은 에이전트 권한이 차단되어 **사용자가 직접**:
+  `gh repo edit coolmarvel/sh-ip-scanner --visibility public --accept-visibility-change-consequences`
+
 ## 2026-08-05 — 기본 대역 하드코딩 제거 + 첫 실행 안내 모달 (v1.0.1)
 
 - **요청**: 코드에 디폴트로 박힌 실 운영 대역을 지우고, 첫 실행 때 안내
