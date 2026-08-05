@@ -25,7 +25,11 @@ dotnet run --project src/ShIpScanner.App  # 실행 (Windows/데스크톱 세션)
 
 ## 설치본
 
-`docs/guides/packaging.md` 절차로 자체포함 게시 후 Inno Setup 으로 `Setup.exe` 를 굽는다.
+**[최신 릴리스에서 인스톨러 받기 (v1.0.1)](https://github.com/coolmarvel/sh-ip-scanner/releases/latest)**
+— 자체포함 빌드라 .NET 런타임 설치가 필요 없다. 코드 서명이 없어 SmartScreen 경고가 뜰 수 있다
+([추가 정보] → [실행]).
+
+직접 굽는 절차는 `docs/guides/packaging.md` (자체포함 게시 → Inno Setup).
 
 ---
 

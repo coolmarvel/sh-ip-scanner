@@ -12,6 +12,20 @@ domain: development
 
 블록 형식: `## YYYY-MM-DD — 제목` 아래에 **요청/피드백 → 수정 → 검증 → 다음** 순서로 간결하게.
 
+## 2026-08-05 — v1.0.1 GitHub Release 게시 (인스톨러 공개 다운로드)
+
+- **요청**: 포트폴리오에서 인스톨러를 내려받게 해달라. (다른 개인 프로젝트도 그렇게 해뒀음.)
+- **수정/작업**:
+  - 현재 소스로 다시 게시·컴파일 — `dotnet publish`(Release·win-x64·self-contained·SingleFile)
+    → wine 으로 ISCC → `installer/Output/sh-ip-scanner-Setup-1.0.1.exe` (31MB). 바탕화면에도 복사.
+  - **이 레포는 public 이므로 릴리스도 여기에** 올렸다(dicom-studio 처럼 포트폴리오 레포로 우회할
+    필요 없음): `gh release create v1.0.1` — https://github.com/coolmarvel/sh-ip-scanner/releases/tag/v1.0.1
+  - 릴리스 노트에 설치·사용법 + **코드 서명 없어 SmartScreen 경고 뜸** 안내 명시.
+  - 포트폴리오 상세 페이지(`projectDetails.ts`)에 다운로드 버튼 추가.
+- **검증**: 다운로드 URL 200 + 선두 바이트 `MZ`(정상 PE) 확인.
+- **다음**: Windows 실환경 설치·스캔 검증(todo P1)은 여전히 남아 있다 — 릴리스는 WSL 에서 구운
+  산출물이라 실기 확인 전이다.
+
 ## 2026-08-05 — ShotTool 장면별 캡처로 확장 (포트폴리오 스크린샷 7장)
 
 - **요청**: 포트폴리오 사이트(coolmarvel.github.io)에 이 프로젝트를 추가하면서 **대역을 가린**

@@ -11,6 +11,9 @@ domain: development
 
 ## v1.0.1 — 2026-08-05
 
+> **공개 릴리스**: https://github.com/coolmarvel/sh-ip-scanner/releases/tag/v1.0.1
+> (`sh-ip-scanner-Setup-1.0.1.exe` · 자체포함이라 .NET 런타임 불필요 · 코드 서명 없어 SmartScreen 경고 가능)
+
 - **기본 대역 하드코딩 제거**: 실 운영 대역이 코드에 디폴트로 박혀 있던 것을 삭제
   (공개 저장소 전환 대비). 저장된 대역이 없으면 빈 목록에서 시작.
 - **첫 실행 안내 모달**: 저장된 대역이 없으면 안내 팝업 → 내 대역 자동 감지 표시 +
