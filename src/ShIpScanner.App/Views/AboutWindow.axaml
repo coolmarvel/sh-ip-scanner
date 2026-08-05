@@ -1,0 +1,28 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        x:Class="ShIpScanner.App.Views.AboutWindow"
+        Width="380" Height="260"
+        WindowStartupLocation="CenterOwner"
+        CanResize="False"
+        Icon="/Assets/appicon.ico"
+        Title="정보">
+
+    <StackPanel Margin="20" Spacing="8">
+        <StackPanel Orientation="Horizontal" Spacing="10">
+            <Image Source="/Assets/appicon.ico" Width="40" Height="40" />
+            <StackPanel VerticalAlignment="Center">
+                <TextBlock Text="sh IP Scanner" FontSize="18" FontWeight="Bold" />
+                <TextBlock Text="버전 0.5.0" FontSize="12" Foreground="#667" />
+            </StackPanel>
+        </StackPanel>
+
+        <Border Height="1" Background="#DDE3EA" Margin="0,6" />
+
+        <TextBlock Text="로컬 네트워크 IP·PC명 조회 스캐너 (전산 자산 파악용)" FontSize="13" TextWrapping="Wrap" />
+        <TextBlock Text="제작자 : 이성현 (SeongHyun Lee)" FontSize="13" />
+        <TextBlock Text="© 2026 이성현 (SeongHyun Lee). All rights reserved." FontSize="12" Foreground="#556" TextWrapping="Wrap" />
+        <TextBlock Text="라이센스 : UNLICENSED (개인 저작물 · 독점)" FontSize="12" Foreground="#556" />
+
+        <Button Content="닫기" Click="OnClose" HorizontalAlignment="Right" Margin="0,10,0,0" Padding="20,6" />
+    </StackPanel>
+</Window>

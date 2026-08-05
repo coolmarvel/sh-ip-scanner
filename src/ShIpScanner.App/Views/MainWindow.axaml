@@ -9,11 +9,10 @@
         x:Class="ShIpScanner.App.Views.MainWindow"
         x:DataType="vm:MainViewModel"
         Icon="/Assets/appicon.ico"
-        Width="940" Height="760" MinWidth="720" MinHeight="560"
+        Width="940" Height="760" MinWidth="760" MinHeight="580"
         CanResize="True"
+        FontSize="13"
         Title="sh IP Scanner">
-
-    <!-- CanResize=True 이면 OS 타이틀바에 최소화·최대화(확대)·닫기 버튼이 표준으로 제공된다. -->
 
     <Design.DataContext>
         <vm:MainViewModel />
@@ -23,60 +22,66 @@
         <conv:HostStateToBrushConverter x:Key="StateToBrush" />
     </Window.Resources>
 
-    <!-- 4행 구성: ①헤더 ②컨트롤 ③로그 ④바둑판 -->
     <Grid RowDefinitions="Auto,Auto,Auto,*" Background="#EEF2F7">
 
-        <!-- ① 헤더: 좌측 제목 / 우측 라이센스 -->
-        <Grid Grid.Row="0" ColumnDefinitions="*,Auto" Background="#DCE6F2">
-            <StackPanel Grid.Column="0" Orientation="Horizontal" Margin="12,8" Spacing="10" VerticalAlignment="Center">
-                <Image Source="/Assets/appicon.ico" Width="28" Height="28" />
-                <TextBlock Text="sh IP Scanner" FontSize="18" FontWeight="Bold" VerticalAlignment="Center" />
-            </StackPanel>
-            <!-- 라이센스/저작자 (원본의 falinux 링크 자리 → 내 라이센스로 교체) -->
-            <TextBlock Grid.Column="1" Text="© 2026 이성현 (SeongHyun Lee)" Margin="12,8"
-                       VerticalAlignment="Center" FontSize="11" Foreground="#556" />
+        <!-- ① 헤더: [아이콘 메뉴] 제목  ────  라이센스 -->
+        <Grid Grid.Row="0" ColumnDefinitions="Auto,*,Auto" Background="#D7E2F0" Height="52">
+            <!-- 좌상단 아이콘을 누르면 옵션 메뉴(대역 관리·설정·정보)가 뜬다 (옛 실행기 느낌) -->
+            <Button Grid.Column="0" Margin="10,0,0,0" Padding="4" Background="Transparent"
+                    BorderThickness="0" VerticalAlignment="Center" ToolTip.Tip="메뉴">
+                <Image Source="/Assets/appicon.ico" Width="30" Height="30" />
+                <Button.Flyout>
+                    <MenuFlyout>
+                        <MenuItem Header="대역 관리…" Click="OnManageSubnets" />
+                        <MenuItem Header="설정…" Click="OnSettings" />
+                        <Separator />
+                        <MenuItem Header="정보" Click="OnAbout" />
+                    </MenuFlyout>
+                </Button.Flyout>
+            </Button>
+
+            <TextBlock Grid.Column="1" Text="sh IP Scanner" FontSize="18" FontWeight="Bold"
+                       VerticalAlignment="Center" Margin="8,0,0,0" />
+
+            <TextBlock Grid.Column="2" Text="© 2026 이성현 (SeongHyun Lee)" Margin="0,0,14,0"
+                       VerticalAlignment="Center" FontSize="12" Foreground="#455" />
         </Grid>
 
-        <!-- ② 컨트롤: 설명 + 대역 드롭다운(관리자용) + 검색 -->
-        <Grid Grid.Row="1" ColumnDefinitions="*,Auto" Margin="12,10">
-            <StackPanel Grid.Column="0" VerticalAlignment="Center" Spacing="2">
-                <TextBlock Text="스캔할 대역을 고르고 [검색 시작]을 누르세요. 사용 중인 IP·PC명을 조회합니다." FontSize="13" />
-                <TextBlock Text="{Binding LocalIpText, StringFormat='내 IP: {0}'}" FontSize="12" Foreground="#556" />
+        <!-- ② 컨트롤: 설명·내 IP  ────  대역 선택·검색 -->
+        <Grid Grid.Row="1" ColumnDefinitions="*,Auto" Margin="14,12">
+            <StackPanel Grid.Column="0" VerticalAlignment="Center" Spacing="6">
+                <TextBlock Text="스캔할 대역을 고르고 [검색 시작]을 누르세요. 사용 중인 IP·PC명을 조회합니다."
+                           FontSize="14" />
+                <StackPanel Orientation="Horizontal" Spacing="6">
+                    <TextBlock Text="내 IP" FontSize="13" Foreground="#556" VerticalAlignment="Center" />
+                    <Border Background="#E2EAF4" CornerRadius="4" Padding="9,3">
+                        <TextBlock Text="{Binding LocalIpText}" FontSize="14" FontWeight="SemiBold" Foreground="#16283A" />
+                    </Border>
+                </StackPanel>
             </StackPanel>
 
-            <StackPanel Grid.Column="1" Spacing="6" VerticalAlignment="Center">
-                <!-- 1행: 대역 선택 + 검색/중지 -->
-                <StackPanel Orientation="Horizontal" Spacing="8" HorizontalAlignment="Right">
-                    <TextBlock Text="대역" VerticalAlignment="Center" />
-                    <ComboBox ItemsSource="{Binding Subnets}" SelectedItem="{Binding SelectedSubnet, Mode=TwoWay}"
-                              MinWidth="190" IsEnabled="{Binding !IsScanning}">
-                        <ComboBox.ItemTemplate>
-                            <DataTemplate x:DataType="cfg:SubnetDefinition">
-                                <TextBlock Text="{Binding Display}" />
-                            </DataTemplate>
-                        </ComboBox.ItemTemplate>
-                    </ComboBox>
-                    <Button Content="검색 시작" Command="{Binding StartScanCommand}"
-                            IsEnabled="{Binding !IsScanning}" Background="#2E9E5B" Foreground="White"
-                            Padding="14,6" FontWeight="Bold" />
-                    <Button Content="중지" Command="{Binding StopScanCommand}"
-                            IsEnabled="{Binding IsScanning}" Padding="10,6" />
-                </StackPanel>
-                <!-- 2행: 대역 추가/삭제 (관리자) -->
-                <StackPanel Orientation="Horizontal" Spacing="6" HorizontalAlignment="Right">
-                    <TextBlock Text="대역 관리" VerticalAlignment="Center" FontSize="12" Foreground="#556" />
-                    <TextBox Text="{Binding NewSubnet, Mode=TwoWay}" Watermark="예: 192.168.85"
-                             Width="130" VerticalContentAlignment="Center" IsEnabled="{Binding !IsScanning}" />
-                    <Button Content="＋ 추가" Command="{Binding AddSubnetCommand}" IsEnabled="{Binding !IsScanning}" Padding="8,4" />
-                    <Button Content="삭제" Command="{Binding RemoveSubnetCommand}" IsEnabled="{Binding !IsScanning}" Padding="8,4" />
-                </StackPanel>
+            <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
+                <TextBlock Text="대역" VerticalAlignment="Center" FontSize="14" />
+                <ComboBox ItemsSource="{Binding Subnets}" SelectedItem="{Binding SelectedSubnet, Mode=TwoWay}"
+                          MinWidth="200" FontSize="14" IsEnabled="{Binding !IsScanning}">
+                    <ComboBox.ItemTemplate>
+                        <DataTemplate x:DataType="cfg:SubnetDefinition">
+                            <TextBlock Text="{Binding Display}" />
+                        </DataTemplate>
+                    </ComboBox.ItemTemplate>
+                </ComboBox>
+                <Button Content="검색 시작" Command="{Binding StartScanCommand}"
+                        IsEnabled="{Binding !IsScanning}" Background="#2E9E5B" Foreground="White"
+                        Padding="16,7" FontWeight="Bold" />
+                <Button Content="중지" Command="{Binding StopScanCommand}"
+                        IsEnabled="{Binding IsScanning}" Padding="12,7" />
             </StackPanel>
         </Grid>
 
-        <!-- ③ 로그 영역(검은 배경) -->
-        <Border Grid.Row="2" Background="#101010" Height="96" Margin="12,0">
+        <!-- ③ 로그 영역 -->
+        <Border Grid.Row="2" Background="#101010" Height="96" Margin="14,0" CornerRadius="3">
             <ScrollViewer VerticalScrollBarVisibility="Auto">
-                <ItemsControl ItemsSource="{Binding Log}" Margin="8,6">
+                <ItemsControl ItemsSource="{Binding Log}" Margin="10,6">
                     <ItemsControl.ItemTemplate>
                         <DataTemplate>
                             <TextBlock Text="{Binding}" Foreground="#7CFC7C" FontFamily="Consolas,monospace" FontSize="12" />
@@ -86,8 +91,8 @@
             </ScrollViewer>
         </Border>
 
-        <!-- ④ 바둑판(그리드) — 화면 폭에 맞춰 15열이 균등하게 늘어난다(가로 스크롤 없음). -->
-        <ScrollViewer Grid.Row="3" Margin="12,10,12,12"
+        <!-- ④ 바둑판 — 폭에 맞춰 15열 신축 -->
+        <ScrollViewer Grid.Row="3" Margin="14,12,14,14"
                       HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
             <ItemsControl ItemsSource="{Binding Cells}">
                 <ItemsControl.ItemsPanel>
@@ -97,7 +102,6 @@
                 </ItemsControl.ItemsPanel>
                 <ItemsControl.ItemTemplate>
                     <DataTemplate x:DataType="vm:HostCellViewModel">
-                        <!-- Width 고정 없이 HorizontalAlignment=Stretch → 열 폭이 창 크기에 맞춰 늘어난다. -->
                         <Border Height="44" Margin="1" HorizontalAlignment="Stretch"
                                 BorderBrush="#B0B0B0" BorderThickness="1"
                                 Background="{Binding State, Converter={StaticResource StateToBrush}}"

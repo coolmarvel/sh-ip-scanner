@@ -26,7 +26,13 @@ public sealed class SubnetStore
             if (File.Exists(_path))
             {
                 var list = JsonSerializer.Deserialize<List<SubnetDefinition>>(File.ReadAllText(_path));
-                if (list is { Count: > 0 }) return Sanitize(list);
+                if (list is { Count: > 0 })
+                {
+                    var clean = Sanitize(list);
+                    // v0.4.0 의 오타 기본값(…95)이 그대로 저장돼 있으면 올바른 …90 으로 자동 교정하고 다시 저장.
+                    if (MigrateLegacyTypo(clean)) Save(clean);
+                    return clean;
+                }
             }
         }
         catch
@@ -34,6 +40,20 @@ public sealed class SubnetStore
             // 파일 손상 등은 기본값으로 폴백(앱이 죽지 않게).
         }
         return Defaults();
+    }
+
+    // 알려진 오타(192.168.95) 자동 교정: 80·85·95 가 함께 있고 90 이 없을 때만(=미수정 시드로 판단) 95→90.
+    // 사용자가 직접 90 을 넣었거나 세트를 바꿨다면 건드리지 않는다. 반환값 = 교정 발생 여부.
+    private static bool MigrateLegacyTypo(List<SubnetDefinition> list)
+    {
+        var bases = list.Select(s => s.Base).ToHashSet();
+        bool looksLikeBuggySeed = bases.Contains("192.168.80") && bases.Contains("192.168.85")
+                                  && bases.Contains("192.168.95") && !bases.Contains("192.168.90");
+        if (!looksLikeBuggySeed) return false;
+
+        foreach (var s in list)
+            if (s.Base == "192.168.95") s.Base = "192.168.90";
+        return true;
     }
 
     public void Save(IEnumerable<SubnetDefinition> subnets)
@@ -69,7 +89,7 @@ public sealed class SubnetStore
     {
         new SubnetDefinition { Base = "192.168.80" },
         new SubnetDefinition { Base = "192.168.85" },
-        new SubnetDefinition { Base = "192.168.95" },
+        new SubnetDefinition { Base = "192.168.90" },
     };
 
     // "192.168.80" 형식(3옥텟, 각 0~255) 검증.

@@ -15,10 +15,10 @@ namespace ShIpScanner.App.ViewModels;
 // [개념: MVVM 의 VM] 화면(View)과 로직 사이의 상태 + 명령 계층.
 public partial class MainViewModel : ViewModelBase
 {
-    private readonly SubnetScanner _scanner = new(maxParallel: 128, timeoutMs: 1000);
     private readonly IHostNameResolver _resolver =
         new CompositeHostNameResolver(new NetBiosNameResolver(), new ReverseDnsResolver());
     private readonly SubnetStore _store = new();
+    private readonly ScanSettingsStore _settingsStore = new();
     private CancellationTokenSource? _cts;
 
     // 스캔 대상 대역 목록(드롭다운) — 관리자가 여러 대역을 오가며 고른다.
@@ -34,8 +34,19 @@ public partial class MainViewModel : ViewModelBase
     [ObservableProperty] private int _aliveCount;
     [ObservableProperty] private int _scannedCount;
 
+    // 스캔 옵션(설정 모달에서 조정) — 저장/로드는 _settingsStore.
+    [ObservableProperty] private int _timeoutMs = 1000;
+    [ObservableProperty] private int _maxParallel = 128;
+    [ObservableProperty] private bool _resolveNames = true;
+
     public MainViewModel()
     {
+        // 저장된 스캔 옵션 로드.
+        var st = _settingsStore.Load();
+        TimeoutMs = st.TimeoutMs;
+        MaxParallel = st.MaxParallel;
+        ResolveNames = st.ResolveNames;
+
         // 저장된 대역 목록 로드(없으면 기본 3개).
         foreach (var d in _store.Load()) Subnets.Add(d);
 
@@ -99,10 +110,12 @@ public partial class MainViewModel : ViewModelBase
         _cts = new CancellationTokenSource();
         var ct = _cts.Token;
 
+        // 매 스캔마다 현재 설정으로 스캐너를 만든다(설정 변경이 곧바로 반영되도록).
+        var scanner = new SubnetScanner(MaxParallel, TimeoutMs);
         var progress = new Progress<PingOutcome>(OnPing);
         try
         {
-            await _scanner.ScanAsync(b, progress, ct);
+            await scanner.ScanAsync(b, progress, ct);
             AddLog($"검색 완료 — 사용 중 {AliveCount}대 / 검사 {ScannedCount}개.");
         }
         catch (OperationCanceledException)
@@ -130,6 +143,12 @@ public partial class MainViewModel : ViewModelBase
         cell.RttMs = o.RttMs;
         AliveCount++;
 
+        if (!ResolveNames)
+        {
+            AddLog($"IP:{o.Ip} >>>> 사용 중입니다.");
+            return;
+        }
+
         var name = await _resolver.ResolveAsync(o.Ip, _cts?.Token ?? CancellationToken.None);
         if (!string.IsNullOrWhiteSpace(name))
         {
@@ -141,6 +160,11 @@ public partial class MainViewModel : ViewModelBase
             AddLog($"IP:{o.Ip} >>>> (이름 미확인) 사용 중입니다.");
         }
     }
+
+    // 설정 저장(설정 모달의 [저장]에서 호출).
+    [RelayCommand]
+    private void SaveSettings()
+        => _settingsStore.Save(new ScanSettings { TimeoutMs = TimeoutMs, MaxParallel = MaxParallel, ResolveNames = ResolveNames });
 
     [RelayCommand]
     private void StopScan() => _cts?.Cancel();

@@ -1,0 +1,37 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="using:ShIpScanner.App.ViewModels"
+        x:Class="ShIpScanner.App.Views.SettingsWindow"
+        x:DataType="vm:MainViewModel"
+        Width="400" Height="300"
+        WindowStartupLocation="CenterOwner"
+        CanResize="False"
+        Icon="/Assets/appicon.ico"
+        Title="설정">
+
+    <Grid Margin="18" RowDefinitions="Auto,Auto,Auto,Auto,*,Auto">
+        <TextBlock Grid.Row="0" Text="스캔 옵션" FontSize="15" FontWeight="Bold" Margin="0,0,0,14" />
+
+        <Grid Grid.Row="1" ColumnDefinitions="*,140" Margin="0,0,0,10">
+            <TextBlock Grid.Column="0" Text="핑 타임아웃 (ms)" VerticalAlignment="Center" FontSize="13" />
+            <NumericUpDown Grid.Column="1" Value="{Binding TimeoutMs}" Minimum="100" Maximum="10000" Increment="100" FormatString="0" />
+        </Grid>
+
+        <Grid Grid.Row="2" ColumnDefinitions="*,140" Margin="0,0,0,10">
+            <TextBlock Grid.Column="0" Text="동시 스캔 개수" VerticalAlignment="Center" FontSize="13" />
+            <NumericUpDown Grid.Column="1" Value="{Binding MaxParallel}" Minimum="1" Maximum="512" Increment="16" FormatString="0" />
+        </Grid>
+
+        <CheckBox Grid.Row="3" IsChecked="{Binding ResolveNames}" Content="PC명(호스트명) 조회 — NetBIOS/역DNS" FontSize="13" />
+
+        <TextBlock Grid.Row="4" VerticalAlignment="Bottom" FontSize="12" Foreground="#667"
+                   TextWrapping="Wrap"
+                   Text="타임아웃이 짧을수록 빠르지만 느린 장비를 놓칠 수 있습니다. 설정은 다음 검색부터 적용됩니다." />
+
+        <StackPanel Grid.Row="5" Orientation="Horizontal" Spacing="8" HorizontalAlignment="Right" Margin="0,14,0,0">
+            <Button Content="저장" Command="{Binding SaveSettingsCommand}" Click="OnSaveClose"
+                    Background="#2E9E5B" Foreground="White" Padding="20,6" FontWeight="Bold" />
+            <Button Content="취소" Click="OnClose" Padding="20,6" />
+        </StackPanel>
+    </Grid>
+</Window>
