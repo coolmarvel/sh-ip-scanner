@@ -3,11 +3,7 @@
 # 컴파일이 깨졌으면 에이전트를 깨워 알린다 (exit 2 = 실패 통지). ADR-0001 하네스 참고.
 set -uo pipefail
 
-FILE_PATH=$(python3 -c "
-import json, os
-data = json.loads(os.environ.get('CLAUDE_TOOL_INPUT', '{}'))
-print(data.get('file_path', ''))
-" 2>/dev/null) || exit 0
+FILE_PATH=$(python3 "$(dirname "$0")/read-tool-input.py" file_path) || exit 0
 
 # 빌드에 영향 주는 파일만 대상 (.cs / .axaml / .csproj). 문서 등은 조용히 통과.
 case "$FILE_PATH" in
