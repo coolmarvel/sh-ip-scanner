@@ -12,7 +12,7 @@ domain: development
 
 ## P1 — 다음 릴리스에서 다뤄야 함
 
-- [ ] **Windows 실환경 검증** — 인스톨러(`sh-ip-scanner-Setup-1.0.1.exe`) 설치 → **첫 실행
+- [ ] **Windows 실환경 검증** — 인스톨러(`SH-IP-Scanner-Setup-1.0.2.exe`) 설치 → **첫 실행
       안내 모달→대역 등록** 플로우 확인 → 원내망 스캔 → 주황/연두 색칠 + 한글 PC명(NetBIOS)
       실제로 잡히는지 확인. 안 잡히면 NetBIOS 타임아웃·방화벽(UDP137) 점검.
 

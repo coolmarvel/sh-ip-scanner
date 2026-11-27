@@ -1,7 +1,7 @@
 ---
 title: 세션 로그
 created: 2026-08-04
-updated: 2026-08-05
+updated: 2026-11-27
 domain: development
 ---
 
@@ -11,6 +11,18 @@ domain: development
 (커밋/푸시는 사용자가 직접·성긴 단위 — git history 를 이력 SSOT 로 삼지 않는다.)
 
 블록 형식: `## YYYY-MM-DD — 제목` 아래에 **요청/피드백 → 수정 → 검증 → 다음** 순서로 간결하게.
+
+## 2026-11-27 — 제품 이름 SH IP Scanner 로 통일 (v1.0.2)
+
+- **요청**: pdf-editor·remote-assist 를 뺀 내 앱 이름을 `SH …` 로 통일(SH Compositor·SH e-Consent·SH Messenger·SH Form Designer·SH Video Editor·SH DICOM Studio).
+  IP Scanner 도 포함(사용자 선택). 인스톨러 교체·커밋·푸시.
+- **수정**: `sh IP Scanner` → `SH IP Scanner` — App csproj Product, 메인 창 제목·머리글, [정보] 창, 인스톨러(AppName·기본 폴더·시작 메뉴·바로가기,
+  산출물 `SH-IP-Scanner-Setup-<판>.exe`), 라이선스 머리글(`LICENSE`·`installer/LICENSE.txt` — UTF-8 BOM 유지), README·AGENTS·CLAUDE.md·브리프·ADR-0002·
+  plans 제목·packaging(인스톨러 전달 위치를 `바탕화면\seonghyun` 으로)·todo.
+- **삭제**: `installer/sh-manager.iss` — 철회한 콘솔명 `sh Manager`(0.7.0) 시절 스크립트가 남아 있었다(같은 AppId). 이름이 sh IP Scanner 로 되돌아간 뒤 쓰지 않음.
+- **그대로 둔 것**: AppId, exe·어셈블리 이름, 설정 폴더 `%APPDATA%\sh IP Scanner`(대역·설정 파일 위치 — Windows 는 대소문자 무시라 바꿀 이유 없음), 지난 기록.
+  버전 1.0.1 → **1.0.2**(csproj Version·AssemblyVersion·FileVersion·iss).
+- **검증**: `dotnet build ShIpScanner.sln -c Debug`(0 경고·0 오류) · `dotnet test`(Core 11 통과) · `dotnet format --verify-no-changes` 통과.
 
 ## 2026-10-29 - 하네스 훅 입력 결함 수정 (코드·버전 변경 없음)
 

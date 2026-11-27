@@ -1,4 +1,4 @@
-# CLAUDE.md — sh IP Scanner 작업 가이드
+# CLAUDE.md — SH IP Scanner 작업 가이드
 
 이 파일은 **세션이 바뀌어도 맥락을 즉시 복구**하기 위한 진입점이다. Claude Code는 세션 시작 시
 이 파일을 자동으로 읽는다. (도구 중립 절대 규칙은 `AGENTS.md`.)
@@ -88,7 +88,7 @@ dotnet format ShIpScanner.sln --verify-no-changes
 # 릴리스 게시 + 인스톨러 (검증됨 — 상세는 docs/guides/packaging.md)
 dotnet publish src/ShIpScanner.App/ShIpScanner.App.csproj -c Release -r win-x64 --self-contained true -p:PublishSingleFile=true -o publish/win-x64
 cd installer && WINEDEBUG=-all wine "C:\\Program Files\\Inno Setup 6\\ISCC.exe" sh-ip-scanner.iss
-cp installer/Output/sh-ip-scanner-Setup-*.exe /mnt/c/Users/user/Desktop/
+cp installer/Output/SH-IP-Scanner-Setup-*.exe /mnt/c/Users/user/Desktop/seonghyun/
 ```
 
 ## 코드 지도 (수정 시 어디를 보나)

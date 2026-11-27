@@ -12,7 +12,7 @@ Accepted
 
 ## 맥락
 
-`sh IP Scanner` 는 두 가지 목적을 동시에 가진다 (→ `docs/brief.md`):
+`SH IP Scanner` 는 두 가지 목적을 동시에 가진다 (→ `docs/brief.md`):
 
 1. **결과물** — 기존에 쓰던 포터블 툴 `faIpScanner.exe` 처럼 LAN 대역을 스윕해 살아있는
    호스트의 IP·MAC·호스트명을 보여주는 Windows 데스크톱 스캐너.

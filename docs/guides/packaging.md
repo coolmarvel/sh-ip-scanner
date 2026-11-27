@@ -5,7 +5,7 @@ updated: 2026-08-04
 domain: packaging
 ---
 
-# 패키징 가이드 — sh IP Scanner (Windows 설치본)
+# 패키징 가이드 — SH IP Scanner (Windows 설치본)
 
 > **파이프라인 검증 완료 (2026-08-04, v0.1.0)** — 아래 절차로 실제 `Setup.exe` 를 구워 바탕화면에
 > 전달했다. WSL(리눅스)에서도 전 과정이 돌아간다: `dotnet publish` 는 크로스 게시, Inno Setup 컴파일은
@@ -14,14 +14,14 @@ domain: packaging
 
 ## 목표 산출물
 
-- `sh-ip-scanner-Setup-<버전>.exe` — 더블클릭하면 설치 마법사가 뜨는 Windows 인스톨러(Inno Setup).
+- `SH-IP-Scanner-Setup-<버전>.exe` — 더블클릭하면 설치 마법사가 뜨는 Windows 인스톨러(Inno Setup).
 - 설치본은 **자체포함(self-contained)** — 대상 PC에 .NET 런타임이 없어도 실행되도록 런타임을 동봉한다.
 
 ## 공통 규칙 (발사대에서 승격된 것)
 
 - **릴리스 전 검증 통과가 먼저다**: `dotnet build -c Release` + `dotnet test` + `dotnet format --verify-no-changes`.
 - 산출물 폴더(`publish/`, `installer/Output/`)는 `.gitignore` 대상 — **설치 파일을 git 에 커밋하지 않는다.**
-- 공개 배포 시 자산 파일명은 **ASCII** 로 (`sh-ip-scanner-Setup-1.0.0.exe`). 한글 파일명 금지(URL/도구 호환).
+- 공개 배포 시 자산 파일명은 **ASCII** 로 (`SH-IP-Scanner-Setup-1.0.2.exe`). 한글 파일명 금지(URL/도구 호환).
 - 업로드 스크립트는 **버전을 파라미터로** 받게 만든다(릴리스마다 스크립트 복사본이 쌓이지 않도록).
 
 ## 1단계 — 자체포함 게시 (dotnet publish)
@@ -47,11 +47,11 @@ dotnet publish src/ShIpScanner.App/ShIpScanner.App.csproj \
 
 ```ini
 [Setup]
-AppName=sh IP Scanner
+AppName=SH IP Scanner
 AppVersion=1.0.0
-DefaultDirName={autopf}\sh IP Scanner
-DefaultGroupName=sh IP Scanner
-OutputBaseFilename=sh-ip-scanner-Setup-1.0.0
+DefaultDirName={autopf}\SH IP Scanner
+DefaultGroupName=SH IP Scanner
+OutputBaseFilename=SH-IP-Scanner-Setup-1.0.2
 OutputDir=Output
 Compression=lzma2
 SolidCompression=yes
@@ -61,8 +61,8 @@ ArchitecturesInstallIn64BitMode=x64
 Source: "..\publish\win-x64\*"; DestDir: "{app}"; Flags: recursesubdirs
 
 [Icons]
-Name: "{group}\sh IP Scanner"; Filename: "{app}\ShIpScanner.App.exe"
-Name: "{autodesktop}\sh IP Scanner"; Filename: "{app}\ShIpScanner.App.exe"
+Name: "{group}\SH IP Scanner"; Filename: "{app}\ShIpScanner.App.exe"
+Name: "{autodesktop}\SH IP Scanner"; Filename: "{app}\ShIpScanner.App.exe"
 
 [Run]
 Filename: "{app}\ShIpScanner.App.exe"; Description: "실행"; Flags: nowait postinstall skipifsilent
@@ -73,8 +73,8 @@ Filename: "{app}\ShIpScanner.App.exe"; Description: "실행"; Flags: nowait post
 ```bash
 cd installer
 WINEDEBUG=-all wine "C:\\Program Files\\Inno Setup 6\\ISCC.exe" sh-ip-scanner.iss
-# 결과물: installer/Output/sh-ip-scanner-Setup-<버전>.exe
-cp Output/sh-ip-scanner-Setup-<버전>.exe /mnt/c/Users/user/Desktop/   # 바탕화면 전달
+# 결과물: installer/Output/SH-IP-Scanner-Setup-<버전>.exe
+cp Output/SH-IP-Scanner-Setup-<버전>.exe /mnt/c/Users/user/Desktop/seonghyun/   # 바탕화면 seonghyun 폴더로 전달(이전 판은 지운다)
 ```
 
 (Windows 에서 직접 할 때는 `iscc.exe installer\sh-ip-scanner.iss`.) 실제 스크립트는

@@ -1,4 +1,4 @@
-# sh IP Scanner
+# SH IP Scanner
 
 로컬 네트워크(LAN)의 서브넷을 훑어 **살아있는 호스트의 IP·PC명을 바둑판으로 보여주는 Windows
 데스크톱 스캐너**. 기존 포터블 툴 `faIpScanner` 를 벤치마킹해 **C# / .NET 8 / Avalonia(MVVM)** 로
