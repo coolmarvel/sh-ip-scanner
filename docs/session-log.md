@@ -19,6 +19,7 @@ domain: development
 - **수정**: App csproj 에 `AssemblyTitle` = `SH IP Scanner`. 버전 1.0.2 → **1.0.3**(csproj Version·AssemblyVersion·FileVersion·iss), packaging 예시·todo 의 인스톨러 판.
 - **검증**: `dotnet build ShIpScanner.sln -c Debug`(0 오류) · `dotnet test`(Core 11 통과) · `dotnet format --verify-no-changes` 통과.
   publish 한 exe 속성: 파일 설명·제품 이름 `SH IP Scanner`, 파일 버전 1.0.3.0.
+- **전달**: `바탕화면\seonghyun\SH-IP-Scanner-Setup-1.0.3.exe`(30 MB, SHA `058c4ddc…`), 옛 1.0.2 인스톨러 삭제. 이 PC 에는 설치돼 있지 않아 설치는 안 함(1.0.2 때와 같음).
 
 ## 2026-11-27 — 제품 이름 SH IP Scanner 로 통일 (v1.0.2)
 
