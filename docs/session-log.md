@@ -23,6 +23,8 @@ domain: development
 - **그대로 둔 것**: AppId, exe·어셈블리 이름, 설정 폴더 `%APPDATA%\sh IP Scanner`(대역·설정 파일 위치 — Windows 는 대소문자 무시라 바꿀 이유 없음), 지난 기록.
   버전 1.0.1 → **1.0.2**(csproj Version·AssemblyVersion·FileVersion·iss).
 - **검증**: `dotnet build ShIpScanner.sln -c Debug`(0 경고·0 오류) · `dotnet test`(Core 11 통과) · `dotnet format --verify-no-changes` 통과.
+- **전달**: `바탕화면\seonghyun\SH-IP-Scanner-Setup-1.0.2.exe`(30 MB, SHA `f1d07e59…`). 이 PC 에는 설치돼 있지 않아 설치는 안 함 — 폴더 없이 남아 있던 제거 항목
+  `sh IP Scanner 버전 0.1.0`(HKLM, `D:\sh IP Scanner`)과 시작 메뉴 `sh IP Scanner`(`sh Manager.lnk`)·철회한 `sh Agent`·`sh Asset` 바로가기를 지움.
 
 ## 2026-10-29 - 하네스 훅 입력 결함 수정 (코드·버전 변경 없음)
 
