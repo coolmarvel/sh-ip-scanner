@@ -8,12 +8,14 @@
     <ApplicationIcon>Assets/appicon.ico</ApplicationIcon>
     <!-- 저작자/라이센스 메타데이터 — 탐색기 '속성 > 자세히'와 인스톨러에 노출된다. -->
     <Product>SH IP Scanner</Product>
+    <!-- exe 파일 설명(작업 관리자·속성 > 자세히에 앱 이름처럼 보임) — 없으면 어셈블리 이름 ShIpScanner.App 이 뜬다 -->
+    <AssemblyTitle>SH IP Scanner</AssemblyTitle>
     <Authors>SeongHyun Lee</Authors>
     <Company>SeongHyun Lee</Company>
     <Copyright>© 2026 이성현 (SeongHyun Lee). All rights reserved.</Copyright>
-    <Version>1.0.2</Version>
-    <AssemblyVersion>1.0.2.0</AssemblyVersion>
-    <FileVersion>1.0.2.0</FileVersion>
+    <Version>1.0.3</Version>
+    <AssemblyVersion>1.0.3.0</AssemblyVersion>
+    <FileVersion>1.0.3.0</FileVersion>
   </PropertyGroup>
 
   <ItemGroup>

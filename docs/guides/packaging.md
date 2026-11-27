@@ -21,7 +21,7 @@ domain: packaging
 
 - **릴리스 전 검증 통과가 먼저다**: `dotnet build -c Release` + `dotnet test` + `dotnet format --verify-no-changes`.
 - 산출물 폴더(`publish/`, `installer/Output/`)는 `.gitignore` 대상 — **설치 파일을 git 에 커밋하지 않는다.**
-- 공개 배포 시 자산 파일명은 **ASCII** 로 (`SH-IP-Scanner-Setup-1.0.2.exe`). 한글 파일명 금지(URL/도구 호환).
+- 공개 배포 시 자산 파일명은 **ASCII** 로 (`SH-IP-Scanner-Setup-1.0.3.exe`). 한글 파일명 금지(URL/도구 호환).
 - 업로드 스크립트는 **버전을 파라미터로** 받게 만든다(릴리스마다 스크립트 복사본이 쌓이지 않도록).
 
 ## 1단계 — 자체포함 게시 (dotnet publish)
@@ -51,7 +51,7 @@ AppName=SH IP Scanner
 AppVersion=1.0.0
 DefaultDirName={autopf}\SH IP Scanner
 DefaultGroupName=SH IP Scanner
-OutputBaseFilename=SH-IP-Scanner-Setup-1.0.2
+OutputBaseFilename=SH-IP-Scanner-Setup-1.0.3
 OutputDir=Output
 Compression=lzma2
 SolidCompression=yes

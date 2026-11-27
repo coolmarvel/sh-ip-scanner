@@ -1,7 +1,7 @@
 ---
 title: 세션 로그
 created: 2026-08-04
-updated: 2026-11-27
+updated: 2026-11-28
 domain: development
 ---
 
@@ -11,6 +11,14 @@ domain: development
 (커밋/푸시는 사용자가 직접·성긴 단위 — git history 를 이력 SSOT 로 삼지 않는다.)
 
 블록 형식: `## YYYY-MM-DD — 제목` 아래에 **요청/피드백 → 수정 → 검증 → 다음** 순서로 간결하게.
+
+## 2026-11-28 — exe 파일 설명을 SH IP Scanner 로 (v1.0.3)
+
+- **요청**: "아이피 스캐너도 바꾸자" — 1.0.2 이름 통일 뒤에도 exe 파일 설명(작업 관리자·속성 > 자세히에 앱 이름처럼 보임)이 어셈블리 이름 `ShIpScanner.App` 이었다.
+  다른 SH 앱(Form Designer·e-Consent·DICOM Studio·Compositor)도 2026-11-27 같은 이유로 고쳤다.
+- **수정**: App csproj 에 `AssemblyTitle` = `SH IP Scanner`. 버전 1.0.2 → **1.0.3**(csproj Version·AssemblyVersion·FileVersion·iss), packaging 예시·todo 의 인스톨러 판.
+- **검증**: `dotnet build ShIpScanner.sln -c Debug`(0 오류) · `dotnet test`(Core 11 통과) · `dotnet format --verify-no-changes` 통과.
+  publish 한 exe 속성: 파일 설명·제품 이름 `SH IP Scanner`, 파일 버전 1.0.3.0.
 
 ## 2026-11-27 — 제품 이름 SH IP Scanner 로 통일 (v1.0.2)
 

@@ -1,13 +1,17 @@
 ---
 title: 체인지로그
 created: 2026-08-04
-updated: 2026-11-27
+updated: 2026-11-28
 domain: development
 ---
 
 # 체인지로그 (릴리스 단위)
 
 사람용 요약 — 릴리스(버전 승격·배포) 단위로만 기록한다. 세부 이력은 `session-log.md`.
+
+## v1.0.3 — 2026-11-28
+
+- 작업 관리자·파일 속성에 보이는 이름(파일 설명)도 **SH IP Scanner** 로(전에는 `ShIpScanner.App`).
 
 ## v1.0.2 — 2026-11-27
 
